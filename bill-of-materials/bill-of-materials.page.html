@@ -1,0 +1,202 @@
+
+<ion-header>
+	<app-list-toolbar pageTitle="{{'erp.app.pages.product.bill-of-material.page-title' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)"></app-list-toolbar>
+	
+	<section class="table desktop-only">
+		<header class="bold">
+			<div class="col-checkbox cell"></div>
+			<div class="col-id cell" (click)="sortToggle('Id')">
+				{{'erp.app.pages.product.bill-of-material.id' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
+			</div>
+			<div class="col-name cell" (click)="sortToggle('ItemName')">
+				{{'erp.app.pages.product.bill-of-material.item-name' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.ItemName" [name]="sort.ItemName == 'ItemName'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Keyword" name="search" color="primary"></ion-icon>
+			</div>
+			<div class="col-number cell" (click)="sortToggle('BatchSize')">
+				{{'erp.app.pages.product.bill-of-material.batch-size' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.BatchSize" [name]="sort.BatchSize == 'BatchSize'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.BatchSize" name="search" color="primary"></ion-icon>
+			</div>
+			<div class="col-code cell" (click)="sortToggle('Type')">
+				{{'erp.app.pages.product.bill-of-material.type' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.Type" [name]="sort.Type == 'Type'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Type" name="search" color="primary"></ion-icon>
+			</div>
+
+		</header>
+		<form (submit)="refresh()" action="#">
+			<header class="filter" *ngIf="pageConfig.isShowSearch">
+				<div class="col-checkbox cell"></div>
+				<div class="col-id cell">
+					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="text">
+					<ion-icon class="min-btn" (click)="query.Id=''; refresh()" *ngIf="query.Id" name="close-circle-outline"></ion-icon>
+				</div>
+				<div class="col-name cell">
+					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Keyword" class="c-input" [ngClass]="{active: query.Keyword}" type="text">
+					<ion-icon class="min-btn" (click)="query.Keyword=''; refresh()" *ngIf="query.Keyword" name="close-circle-outline"></ion-icon>
+				</div>
+				<div class="col-number cell">
+					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.BatchSize" class="c-input" [ngClass]="{active: query.BatchSize}" type="text">
+					<ion-icon class="min-btn" (click)="query.BatchSize=''; refresh()" *ngIf="query.BatchSize" name="close-circle-outline"></ion-icon>
+				</div>
+				<div class="col-code cell">
+					<select (change)="refresh()" class="c-input c-dropdown" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Type" [ngClass]="{active: query.Type}">
+						<option *ngFor="let t of typeList" [value]="t.Code">{{t.Name}}</option>
+					</select>
+					<ion-icon class="min-btn" (click)="query.Type=''; refresh()" *ngIf="query.Type" name="close-circle-outline"></ion-icon>
+				</div>
+				
+				<button mat-raised-button type="submit" style="display:none">Search</button>
+			</header>
+		</form>
+	</section>
+</ion-header>
+
+<ion-content appScrollbarTheme class="header-table">
+	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+	<div *ngIf="items.length && pageConfig.showSpinner==false">
+		<section *ngIf="!env.isMobile" class="table">
+			<ion-virtual-scroll [items]="items" approxItemHeight="27px">
+				<ng-container *virtualItem="let i; let itemBounds = bounds; let j = index;">
+					<div class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
+						<div class="col-checkbox cell">
+							<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
+						</div>
+						<div class="col-id cell">
+							<a [routerLink]="['/'+pageConfig.pageName+'/'+i.Id]">{{i.Id}}</a>
+						</div>
+						<div (click)="nav('bill-of-materials/'+i.Id,'forward')" class="col-name cell">
+							<b>{{i._Item.Code}}</b>
+							<span> - 
+								<span>
+									{{i._Item.Name}}
+								</span>
+								<small *ngIf="i.Quantity"><b><ion-text color="primary">X {{i.Quantity}}</ion-text></b></small>
+							</span>
+						</div>
+						<div class="col-number cell">
+							{{i.BatchSize}}
+						</div>
+						<div class="col-code cell">
+							{{i.TypeName}}
+						</div>
+					</div>
+				</ng-container>
+			</ion-virtual-scroll>
+		</section>
+
+		<!-- mobile version -->
+		<div *ngIf="env.isMobile">
+			<form (submit)="refresh()" action="#">
+				<header class="filter mobile-search" *ngIf="pageConfig.isShowSearch">
+					<div class="col-id">
+						{{'erp.app.pages.product.bill-of-material.id' | translate}}
+						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Id" class="c-input" [ngClass]="{active: query.Id}" type="text">
+						<ion-icon class="min-btn" (click)="query.Id=''; refresh()" *ngIf="query.Id" name="close-circle-outline"></ion-icon>
+					</div>
+					<br>
+					<div class="col-name cell">
+						{{'erp.app.pages.product.bill-of-material.item-code' | translate}}
+						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Keyword" class="c-input" [ngClass]="{active: query.Keyword}" type="text">
+						<ion-icon class="min-btn" (click)="query.Keyword=''; refresh()" *ngIf="query.Keyword" name="close-circle-outline"></ion-icon>
+					</div>
+					<!-- <div class="col-number cell">
+						<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.BatchSize" class="c-input" [ngClass]="{active: query.BatchSize}" type="text">
+						<ion-icon class="min-btn" (click)="query.BatchSize=''; refresh()" *ngIf="query.BatchSize" name="close-circle-outline"></ion-icon>
+					</div>
+					<div class="col-code cell">
+						Phân loại
+						<select (change)="refresh()" class="c-input c-dropdown" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Type" [ngClass]="{active: query.Type}">
+							<option *ngFor="let t of typeList" [value]="t.Code">{{t.Name}}</option>
+						</select>
+						<ion-icon class="min-btn" (click)="query.Type=''; refresh()" *ngIf="query.Type" name="close-circle-outline"></ion-icon>
+					</div> -->
+					
+					<button mat-raised-button type="submit" style="display:none">Search</button>
+				</header>
+			</form>
+		<ion-virtual-scroll [items]="items" approxItemHeight="290px" *ngIf="items.length">
+			<ion-card *virtualItem="let i; let itemBounds = bounds; let j = index;" class="bom-list ion-no-margin ion-margin-horizontal">
+				<div class="logo"></div>
+				<div class="checkbox-del">
+					<input (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
+				</div>
+				<ion-card-header (click)="nav('bill-of-materials/'+i.Id,'forward')">
+					<ion-card-title>
+						<small>
+							<strong>
+								<small><ion-text color="primary">{{i._Item.Code}}</ion-text></small>
+								<br>
+								{{i._Item.Name}}</strong>
+						</small>
+	
+						<!-- <div class="ion-float-end">
+							<ion-text color="medium" class="ngay-hd">
+								{{i.SaleOrder.OrderDateText}}
+								<small *ngIf="i.SaleOrder.OrderTimeText != '00:00'">{{i.SaleOrder.OrderTimeText}}</small>
+							</ion-text>
+							<ion-icon name="radio-button-on" [color]="i.Status.Color"></ion-icon>
+						</div> -->
+					</ion-card-title>
+					<ion-card-subtitle>
+						<ion-text>{{'erp.app.pages.product.bill-of-material.type' | translate}}: <ion-text color="primary">{{i.TypeName}}</ion-text></ion-text>
+						<br>
+						<ion-text>
+							{{'erp.app.pages.product.bill-of-material.quantity-for' | translate}}: <ion-text color="primary">#{{i.Quantity}} {{'erp.app.pages.product.bill-of-material.production' | translate}}</ion-text>
+						</ion-text>
+						<br>
+						<ion-text>
+							{{'erp.app.pages.product.bill-of-material.batch-for' | translate}}: <ion-text color="primary">{{i.BatchSize}} {{'erp.app.pages.product.bill-of-material.batch-production' | translate}}</ion-text>
+						</ion-text>
+					
+						<!-- <small>
+							<ion-text color="primary"> ĐÃ XỬ LÝ </ion-text>
+						</small> -->
+	
+					</ion-card-subtitle>
+				</ion-card-header>
+				<ion-card-content no-padding padding-horizontal>
+					<div>
+						<table class="table" style="width: 100%">
+							<tr>
+								
+								<td>
+									<small>{{'erp.app.pages.product.bill-of-material.price-recommend' | translate}}</small>
+								</td>
+								<td style="text-align: right;">
+								<small>{{'erp.app.pages.product.bill-of-material.cost-product' | translate}}</small>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<ion-text color="primary">820,000 đ</ion-text>
+								</td>
+								<td style="text-align: right;">
+									<ion-text color="primary">492,500 đ</ion-text>
+								</td>
+								
+							</tr>
+						</table>
+					</div>
+				</ion-card-content>
+	
+				<ion-item class="card-footer" detail lines="none">
+					<!-- <ion-button *ngIf="i.SaleOrder.Customer.WorkPhone" [href]="'tel:'+i.SaleOrder.Customer.WorkPhone" fill="clear" slot="start" (click)="$event.stopPropagation()">
+						<ion-icon slot="start" name="call" color="danger"></ion-icon>
+						{{i.SaleOrder.Customer.WorkPhone}}
+					</ion-button> -->
+					<ion-button (click)="nav('bill-of-materials/'+i.Id,'forward')" color="secondary" fill="clear" slot="end">{{'erp.app.pages.product.bill-of-material.view-detail' | translate}}
+					</ion-button>
+				</ion-item>
+	
+			</ion-card>
+		</ion-virtual-scroll>
+	</div>
+	</div>
+	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
+		<ion-infinite-scroll-content loadingSpinner="dots"></ion-infinite-scroll-content>
+	</ion-infinite-scroll>
+</ion-content>
