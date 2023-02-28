@@ -34,7 +34,7 @@
 					<label class="c-label" for="Quantity">{{'erp.app.pages.product.bill-of-material.quantity-for' | translate}} <ion-text color="primary"><b>{{formGroup.controls.Quantity.value}}</b> {{'erp.app.pages.product.bill-of-material.production' | translate}}</ion-text>
 						<span *ngIf="!formGroup.controls.Quantity.valid && !formGroup.controls.Quantity.pending && (formGroup.controls.Quantity.dirty || submitAttempt)" ion-text color="danger">(*)</span>
 					</label>
-					<input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input" id="Quantity" formControlName="Quantity" min="0" type="number">
+					<input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input" id="Quantity" formControlName="Quantity" min="0.000000001" step="1" max="999999999999999999" type="number">
 				</div>
 
 			</ion-col>
@@ -110,7 +110,7 @@
 									<label class="c-label" for="Quantity">{{'erp.app.pages.product.bill-of-material.quota-for' | translate}} <ion-text color="primary"><b>{{formGroup.controls.Quantity.value}}</b> {{'erp.app.pages.product.bill-of-material.production' | translate}}</ion-text>
 										<span *ngIf="!formGroup.controls.Quantity.valid && !formGroup.controls.Quantity.pending && (formGroup.controls.Quantity.dirty || submitAttempt)" ion-text color="danger">(*)</span>
 									</label>
-									<input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input" id="Quantity" formControlName="Quantity" min="0" type="number">
+									<input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input" id="Quantity" formControlName="Quantity" min="0.000000001" step="1" max="999999999999999999" type="number">
 								</div>
 								<div class="c-control">
 									<label class="c-label" for="BatchSize">{{'erp.app.pages.product.bill-of-material.batch-size-title' | translate}}
@@ -232,10 +232,10 @@
 														</select>
 													</div>
 													<div class="col-qty cell">
-														<input formControlName="Quantity" [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number" [min]="0" [max]="99999" onkeydown="return event.keyCode !== 190">
+														<input formControlName="Quantity" [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number" [min]="0.000000001" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
 													</div>
 													<div class="col-qty cell">
-														<input formControlName="AdditionalQuantity" [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number" [min]="0" [max]="99999" onkeydown="return event.keyCode !== 190">
+														<input formControlName="AdditionalQuantity" [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number" [min]="0.000000001" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
 													</div>
 													<div class="col-uom cell">
 														<select formControlName="IssueMethod" [attr.disabled]="(!pageConfig.canEdit || submitAttempt)?'':null" class="c-input c-dropdown" (change)="saveChange()">
@@ -247,11 +247,11 @@
 														<input formControlName="UoMPrice" class="c-input" [readonly]="!(pageConfig.canEdit && pageConfig.canEditPrice)" (focus)="$event.target.select()" (change)="saveChange()" mask="separator.0" thousandSeparator="," [allowNegativeNumbers]="false">
 													</div>
 													<div class="col-total cell disable" *ngIf="pageConfig.canViewPrice">{{
-                                                            (g.controls.TotalPrice.value ) | mask: 'separator.0':','}}</div>
+                                                            (g.controls.TotalPrice.value ) | number: '1.0-0'}}</div>
 													<div class="col-total cell disable" *ngIf="pageConfig.canViewStdCost">{{
-                                                            g.controls.StdCost.value | mask: 'separator.0':','}}</div>
+                                                            g.controls.StdCost.value | number: '1.0-0'}}</div>
 													<div class="col-total cell disable" *ngIf="pageConfig.canViewStdCost">{{
-                                                            (g.controls.TotalStdCost.value ) | mask: 'separator.0':','}}</div>
+                                                            (g.controls.TotalStdCost.value ) | number: '1.0-0'}}</div>
 												</ng-container>
 												<div class="col-del cell" *ngIf="pageConfig.canEdit" (click)="removeOrderLine(idx, true)">
 													<ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
@@ -266,20 +266,16 @@
 										<ion-icon class="min-btn" title="{{'erp.app.pages.product.bill-of-material.add-order-line' | translate}}" name="add-circle-outline"></ion-icon>
 									</div>
 									<div class="col-id cell" *ngIf="!pageConfig.canEdit"></div>
-									<div class="col-remark cell">
-										<div class="col-remark cell">
-											<b *ngIf="pageConfig.canEdit && this.id" (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })">{{'erp.app.pages.product.bill-of-material.add-orderline' | translate}}</b>
-										</div>
+									<div class="col-name cell">
+										<b *ngIf="pageConfig.canEdit && this.id" (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })">{{'erp.app.pages.product.bill-of-material.add-orderline' | translate}}</b>
 									</div>
 									<div class="col-uom cell">
 										<div style="height: 35px;"></div>
 									</div>
 									<div class="col-total cell"><b>Tổng cộng:</b></div>
-									<div class="col-total cell disable" *ngIf="pageConfig.canViewPrice"><b>{{ item.TotalPrice | mask:
-                                                'separator.0':',' }}</b></div>
+									<div class="col-total cell disable" *ngIf="pageConfig.canViewPrice"><b>{{ item.TotalPrice | number: '1.0-0' }}</b></div>
 									<div class="col-total cell disable" *ngIf="pageConfig.canViewStdCost"><b></b></div>
-									<div class="col-total cell disable" *ngIf="pageConfig.canViewStdCost"><b>{{ item.TotalStdCost |
-                                                mask: 'separator.0':',' }}</b></div>
+									<div class="col-total cell disable" *ngIf="pageConfig.canViewStdCost"><b>{{ item.TotalStdCost | number: '1.0-0' }}</b></div>
 									<div class="col-del cell disable" *ngIf="pageConfig.canEdit"></div>
 								</div>
 							</section>
@@ -367,7 +363,7 @@
 													<ion-range formControlName="Quantity" (click)="g.txtQtyShow = !g.txtQtyShow" (ionChange)="this.calcTotalLine()" [ngModel]="g.controls.Quantity.value" [disabled]="!pageConfig.canEdit" debounce="300" min="0" max="1000" color="success" pin="true" step="1" [snaps]="false">
 													</ion-range>
 													<div class="ct-additional-quantity">
-														<input formControlName="AdditionalQuantity" (change)="this.calcTotalLine()" [ngModel]="g.controls.AdditionalQuantity.value" [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'" (focus)="$event.target.select()" class="c-input txtAddQtyInput" type="number" [min]="0" [max]="99999" onkeydown="return event.keyCode !== 190">
+														<input formControlName="AdditionalQuantity" (change)="this.calcTotalLine()" [ngModel]="g.controls.AdditionalQuantity.value" [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'" (focus)="$event.target.select()" class="c-input txtAddQtyInput" type="number" [min]="0.000000001" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
 														<ion-text>±</ion-text>
 														<ion-range formControlName="AdditionalQuantity" (click)="g.txtAddQtyShow = !g.txtAddQtyShow" (ionChange)="this.calcTotalLine()" [ngModel]="g.controls.AdditionalQuantity.value" [disabled]="!pageConfig.canEdit" debounce="300" min="0" max="100" color="success" pin="true" step="1" [snaps]="false">
 														</ion-range>
@@ -395,7 +391,7 @@
 															</td>
 
 															<td class="align-right">
-																<b> {{ (g.controls.TotalPrice.value ) | mask: 'separator.0':','}} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</b>
+																<b> {{ (g.controls.TotalPrice.value ) | number: '1.0-0'}} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</b>
 															</td>
 														</tr>
 														<tr>
@@ -404,7 +400,7 @@
 															</td>
 
 															<td class="align-right">
-																{{ (g.controls.StdCost.value ) | mask: 'separator.0':','}} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}
+																{{ (g.controls.StdCost.value ) | number: '1.0-0'}} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}
 															</td>
 														</tr>
 														<tr>
@@ -413,7 +409,7 @@
 															</td>
 
 															<td class="align-right">
-																<b>{{ (g.controls.TotalStdCost.value ) | mask: 'separator.0':','}} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</b>
+																<b>{{ (g.controls.TotalStdCost.value ) | number: '1.0-0'}} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</b>
 															</td>
 														</tr>
 													</table>
@@ -435,13 +431,13 @@
 
 									<div>
 										<ion-badge class="ion-float-right">
-											{{ item.TotalPrice | mask: 'separator.0':',' }} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</ion-badge>
+											{{ item.TotalPrice | number: '1.0-0' }} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</ion-badge>
 										<ion-badge color="secondary">{{'erp.app.pages.product.bill-of-material.recommend-selling-price' | translate}}</ion-badge>
 									</div>
 
 									<div>
 										<ion-badge class="ion-float-right">
-											{{ item.TotalStdCost | mask: 'separator.0':',' }} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</ion-badge>
+											{{ item.TotalStdCost | number: '1.0-0' }} {{'erp.app.pages.product.bill-of-material.vnd' | translate}}</ion-badge>
 										<ion-badge color="secondary">{{'erp.app.pages.product.bill-of-material.total-standard-cost' | translate}}</ion-badge>
 									</div>
 
