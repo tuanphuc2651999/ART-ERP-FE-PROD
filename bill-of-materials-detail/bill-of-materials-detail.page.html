@@ -210,7 +210,7 @@
 												</ng-container>
 												<ng-container *ngIf="g.controls.Type.value=='CTItem'">
 													<div class="col-name cell">
-														<ng-select formControlName="_Item" appendTo="#order-detail-page" [readonly]="!pageConfig.canEdit || submitAttempt" class="c-input" (change)="changedIDItem(g, $event)" [labelForId]="'IDItem'+idx" [items]="g.controls._ItemDataSource.value | async" [typeahead]="g.controls._ItemSearchInput.value" [loading]="g.controls._ItemSearchLoading.value" [virtualScroll]="true" bindLabel="Name" placeholder="{{'erp.app.pages.product.bill-of-material.item-placeholder' | translate}}">
+														<ng-select formControlName="_Item" appendTo="#order-detail-page" [readonly]="!pageConfig.canEdit || submitAttempt" class="c-input" (change)="changedIDItem(g, $event)" [labelForId]="'IDItem'+idx" [items]="g.controls._ItemDataSource.value | async" [clearable]="false" [typeahead]="g.controls._ItemSearchInput.value" [loading]="g.controls._ItemSearchLoading.value" [virtualScroll]="true" bindLabel="Name" placeholder="{{'erp.app.pages.product.bill-of-material.item-placeholder' | translate}}">
 															<ng-template ng-label-tmp let-i="item">
 																<b *ngIf="i.Code" [title]="i.Id">
 																	{{i.Code}}
@@ -235,7 +235,7 @@
 														<input formControlName="Quantity" [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number" [min]="0.000000001" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
 													</div>
 													<div class="col-qty cell">
-														<input formControlName="AdditionalQuantity" [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number" [min]="0.000000001" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
+														<input formControlName="AdditionalQuantity" [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number" [min]="0" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
 													</div>
 													<div class="col-uom cell">
 														<select formControlName="IssueMethod" [attr.disabled]="(!pageConfig.canEdit || submitAttempt)?'':null" class="c-input c-dropdown" (change)="saveChange()">
@@ -363,7 +363,7 @@
 													<ion-range formControlName="Quantity" (click)="g.txtQtyShow = !g.txtQtyShow" (ionChange)="this.calcTotalLine()" [ngModel]="g.controls.Quantity.value" [disabled]="!pageConfig.canEdit" debounce="300" min="0" max="1000" color="success" pin="true" step="1" [snaps]="false">
 													</ion-range>
 													<div class="ct-additional-quantity">
-														<input formControlName="AdditionalQuantity" (change)="this.calcTotalLine()" [ngModel]="g.controls.AdditionalQuantity.value" [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'" (focus)="$event.target.select()" class="c-input txtAddQtyInput" type="number" [min]="0.000000001" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
+														<input formControlName="AdditionalQuantity" (change)="this.calcTotalLine()" [ngModel]="g.controls.AdditionalQuantity.value" [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'" (focus)="$event.target.select()" class="c-input txtAddQtyInput" type="number" [min]="0" [max]="999999999999999999" onkeydown="return event.keyCode !== 190">
 														<ion-text>±</ion-text>
 														<ion-range formControlName="AdditionalQuantity" (click)="g.txtAddQtyShow = !g.txtAddQtyShow" (ionChange)="this.calcTotalLine()" [ngModel]="g.controls.AdditionalQuantity.value" [disabled]="!pageConfig.canEdit" debounce="300" min="0" max="100" color="success" pin="true" step="1" [snaps]="false">
 														</ion-range>

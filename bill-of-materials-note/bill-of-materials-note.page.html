@@ -120,7 +120,7 @@
 
 															<b *ngIf="i.Type == 'CTStage'">
 																<span *ngIf="i.Name">
-																	i.Name
+																	{{i.Name}}
 																</span>
 																<span *ngIf="!i.Name">
 																	{{'erp.app.pages.product.bill-of-material-note.stage' | translate}}
@@ -128,7 +128,7 @@
 															</b>
 															<i *ngIf="i.Type == 'CTText'">
 																<span *ngIf="i.Name">
-																	i.Name
+																	{{i.Name}}
 																</span>
 																<span *ngIf="!i.Name">
 																	{{'erp.app.pages.product.bill-of-material-note.introduction' | translate}}
