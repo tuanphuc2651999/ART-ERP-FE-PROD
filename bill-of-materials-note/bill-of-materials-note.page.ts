@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController, ModalController, AlertController, LoadingController, PopoverController } from '@ionic/angular';
 import { EnvService } from 'src/app/services/core/env.service';
 import { PageBase } from 'src/app/page-base';
-import { BRA_BranchProvider, PROD_BillOfMaterialsProvider, PURCHASE_OrderProvider } from 'src/app/services/static/services.service';
+import { PROD_BillOfMaterialsProvider} from 'src/app/services/static/services.service';
 import { Location } from '@angular/common';
 import { ApiSetting } from 'src/app/services/static/api-setting';
 import { lib } from 'src/app/services/static/global-functions';
