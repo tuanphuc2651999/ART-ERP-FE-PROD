@@ -72,7 +72,7 @@ export class BillOfMaterialsDetailPage extends PageBase {
 
     preLoadData(event) {
         Promise.all([
-            this.branchProvider.read({ Skip: 0, Take: 5000, IDType: 115, AllParent: true, Id: this.env.selectedBranchAndChildren }),
+            this.branchProvider.read({ Skip: 0, Take: 5000, Type: 'Warehouse', AllParent: true, Id: this.env.selectedBranchAndChildren }),
             this.priceListProvider.read(),
             this.env.getType('BOMType'),
             this.env.getType('ComponentType'),
