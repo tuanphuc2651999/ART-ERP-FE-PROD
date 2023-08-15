@@ -1,53 +1,3 @@
-.mobile-only{display: none}
-
-
-@media screen and (max-width: 768px) {
-    .mobile-only{display: block;}
-    .desktop-only{display: none;}
-
-    .mobile-search{
-
-    }
-    .mobile-search {
-        background-color: #fff;
-        margin: 20px;
-        padding: 20px;
-        border-color: #fcfcfc;
-    }
-    .mobile-search .c-input{
-        border: 1px solid var(--menu-right-border-color) !important;
-            outline: none;
-            width: 100%;
-            height: 2rem;
-
-            border-radius: 3px;
-            font-weight: normal;
-
-            background-color: rgba(var(--ion-color-primary-rgb, 0, 0, 0), .05);
-
-            &.ng-dirty:not(.no-check-dirty) {
-                border: 1px solid var(--ion-color-success) !important;
-            }
-    
-            &.ng-invalid, &.ng-invalid.ng-dirty:not(.no-check-dirty) {
-                border: 1px solid var(--ion-color-danger) !important;
-            }
-            &[readonly],&[disabled],&.disable{
-                background-color: var(--menu-right-border-color) !important;
-                color: var(--ion-color-medium);
-            }
-
-            &:focus{
-                border-width: 2px !important;
-            }
-        }
-
-    .mobile-search .c-dropdown{
-        width: calc(100% - 20px);
-        margin-right: 20px;
-    }
-}
-
 // ion-header > ion-toolbar {
 //     --padding-start: 40px;
 //     --padding-end: 40px;
@@ -221,8 +171,6 @@ ion-card.bom-list {
         td:first-child {
             width: 10px;
         }
-
-        .td-address {}
     }
 }
 

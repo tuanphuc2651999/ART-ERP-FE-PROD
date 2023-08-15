@@ -137,7 +137,10 @@ export class OrderRecommendationPage extends PageBase {
     }
 
     async suggestVendors() {
+        
+        
         let ors = [...new Set(this.items.map(s => s.Id))];
+        console.log(ors);
         ors.forEach(i => {
             let itemLines = this.items.find(d => d.Id == i && d.ItemId);
             let vendorLines = this.items.filter(d => d.Id == i && !d.ItemId);
@@ -150,7 +153,7 @@ export class OrderRecommendationPage extends PageBase {
             }
 
             if (!vendor && vendorLines.length > 1) {
-                vendor = vendorLines.reduce((prev, curr) => { return prev.Cost < curr.Cost ? prev : curr });
+                vendor = vendorLines.reduce((prev, curr) => { return prev.Price < curr.Price ? prev : curr });
             }
 
             if (!vendor && vendorLines.length) {

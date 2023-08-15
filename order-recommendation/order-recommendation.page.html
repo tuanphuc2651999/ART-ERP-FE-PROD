@@ -1,10 +1,10 @@
 <ion-header>
-	<app-list-toolbar pageTitle="{{'erp.app.pages.product.order-recommendation.page-title' | translate}}" [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)">
+	<app-list-toolbar [pageConfig]="pageConfig" [selectedItems]="selectedItems" [query]="query" (add)="add()" (refresh)="refresh()" (export)="export()" (import)="import($event)" (help)="help()" (unselect)="unselect()" (archiveItems)="archiveItems()" (deleteItems)="deleteItems()" (changeBranch)="changeBranch($event)">
 		<ng-container>
-			<ion-button *ngIf="pageConfig.canCreatePO && selectedCount" (click)="createPO()" title="{{'erp.app.pages.product.order-recommendation.create-po' | translate}}">
+			<ion-button *ngIf="pageConfig.canCreatePO && selectedCount" (click)="createPO()" title="{{'Create PO' | translate}}">
 				<ion-icon slot="icon-only" name="basket-outline"></ion-icon>
 			</ion-button>
-			<ion-button *ngIf="pageConfig.canCreatePO" (click)="suggestVendors()" title="{{'erp.app.pages.product.order-recommendation.suggest-vendor' | translate}}">
+			<ion-button *ngIf="pageConfig.canCreatePO" (click)="suggestVendors()" title="{{'Vendors recommendation' | translate}}">
 				<ion-icon slot="icon-only" name="bulb-outline"></ion-icon>
 			</ion-button>
 		</ng-container>
@@ -20,61 +20,61 @@
 	<section class="table" style="min-width: calc(1024px);">
 		<header class="bold">
 			<!-- <div class="col-checkbox cell"></div> -->
-			<div class="col-id cell" (click)="sortToggle('Id')">
-				{{'erp.app.pages.product.order-recommendation.id' | translate}}
+			<div class="col-id cell">
+				{{'Id' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
 			</div>
 
-			<div class="col-mrpname cell" (click)="sortToggle('IDMRP')">
+			<div class="col-mrpname cell">
 				MRPName
 				<ion-icon class="min-btn" *ngIf="sort.IDMRP" [name]="sort.IDMRP == 'IDMRP'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.IDMRP" name="search" color="primary"></ion-icon>
 			</div>
-			<div class="col-name cell" (click)="sortToggle('Name')">
-				{{'erp.app.pages.product.order-recommendation.name' | translate}}
+			<div class="col-name cell">
+				{{'Item' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.Name" [name]="sort.Name == 'Name'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Name" name="search" color="primary"></ion-icon>
 			</div>
-			<!-- <div class="col-id cell" (click)="sortToggle('Id')">
-				{{'erp.app.pages.product.order-recommendation.id-sort' | translate}}
+			<!-- <div class="col-id cell">
+				{{'id-sort' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
 			</div> -->
 			<div class="col-number cell">
-				{{'erp.app.pages.product.order-recommendation.dinner-pax' | translate}}
+				{{'Quantity' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.DinnerPax" [name]="sort.DinnerPax == 'DinnerPax'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.DinnerPax" name="search" color="primary"></ion-icon>
 			</div>
 
 			<div class="col-date cell">
-				{{'erp.app.pages.product.order-recommendation.party-date' | translate}}
+				{{'Duration' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.PartyDate" [name]="sort.PartyDate == 'PartyDate'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.PartyDate" name="search" color="primary"></ion-icon>
 			</div>
-			<div class="col-checkbox cell">{{'erp.app.pages.product.order-recommendation.order' | translate}}</div>
-			<!-- <div class="col-id cell" (click)="sortToggle('Id')">
-				{{'erp.app.pages.product.order-recommendation.kpi-sort' | translate}}
+			<div class="col-checkbox cell">{{'Order' | translate}}</div>
+			<!-- <div class="col-id cell">
+				{{'kpi-sort' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.Id" [name]="sort.Id == 'Id'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Id" name="search" color="primary"></ion-icon>
 			</div> -->
 			<div class="col-number cell">
-				{{'erp.app.pages.product.order-recommendation.price' | translate}}
+				{{'Price' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.DinnerPax" [name]="sort.DinnerPax == 'DinnerPax'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.DinnerPax" name="search" color="primary"></ion-icon>
 			</div>
 			<div class="col-number cell">
-				{{'erp.app.pages.product.order-recommendation.quality' | translate}}
+				{{'Quality' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.DinnerPax" [name]="sort.DinnerPax == 'DinnerPax'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.DinnerPax" name="search" color="primary"></ion-icon>
 			</div>
 			<div class="col-number cell">
-				{{'erp.app.pages.product.order-recommendation.delivery' | translate}}
+				{{'Delivery' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.DinnerPax" [name]="sort.DinnerPax == 'DinnerPax'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.DinnerPax" name="search" color="primary"></ion-icon>
 			</div>
 			<div class="col-number cell">
-				{{'erp.app.pages.product.order-recommendation.payment' | translate}}
+				{{'Payment' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.DinnerPax" [name]="sort.DinnerPax == 'DinnerPax'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.DinnerPax" name="search" color="primary"></ion-icon>
 			</div>
@@ -85,7 +85,7 @@
 				<div class="col-id cell"></div>
 				<div class="col-mrpname cell">
 					<select (change)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.IDMRP" class="c-input c-dropdown" [ngClass]="{active: query.IDMRP}">
-						<option [value]="''">{{'erp.app.pages.shipping.shipment.all-option' | translate}}</option>
+						<option [value]="''">{{'All' | translate}}</option>
 						<option [disabled]="t.Flag || t.IDMRP == null" *ngFor="let t of itemMRPList" [value]="t.IDMRP">{{t.MRPName}}</option>
 					</select>
 					<ion-icon class="min-btn" (click)="query.IDMRP=''; refresh()" *ngIf="query.IDMRP" name="close-circle-outline"></ion-icon>
@@ -94,15 +94,7 @@
 					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Keyword" class="c-input" [ngClass]="{active: query.Keyword}" type="text">
 					<ion-icon class="min-btn" (click)="query.Keyword=''; refresh()" *ngIf="query.Keyword" name="close-circle-outline"></ion-icon>
 				</div>
-				<div class="col-date cell">
-					<input placeholder="{{'erp.app.pages.product.order-recommendation.order-date-placeholder' | translate}}" (change)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.OrderDate" class="c-input" [ngClass]="{active: query.OrderDate}" type="date">
-					<ion-icon class="min-btn" (click)="query.OrderDate=''; refresh()" *ngIf="query.OrderDate" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-date cell">
-					<input placeholder="{{'erp.app.pages.product.order-recommendation.order-date-placeholder' | translate}}" (change)="refresh()" [ngModelOptions]="{standalone: true}" [(ngModel)]="query.OrderDate" class="c-input" [ngClass]="{active: query.OrderDate}" type="date">
-					<ion-icon class="min-btn" (click)="query.OrderDate=''; refresh()" *ngIf="query.OrderDate" name="close-circle-outline"></ion-icon>
-				</div>
-				<div class="col-name cell"></div>
+				
 				<button mat-raised-button type="submit" style="display:none">Search</button>
 			</header>
 		</form>
@@ -131,9 +123,11 @@
 						<span *ngIf="i.ItemId">
 							<b>{{i.ItemCode}}</b> - {{i.ItemName}}
 						</span>
-						<span *ngIf="!i.ItemId">
-							<!-- <span class="spacing"></span> -->
-							{{i.VendorCode}} - {{i.VendorName}}
+						<span *ngIf="!i.ItemId" class="vendor-name">
+							<a [href]="'#/'+'business-partner/'+i.VendorId" (click)="nav('business-partner/'+i.VendorId,'forward')" title="{{'Vendor' | translate}}">
+								{{i.VendorId}} <ion-icon name="open-outline"></ion-icon>
+							</a>
+							{{i.VendorName}}
 						</span>
 					</div>
 					<!-- <div class="col-id cell" *ngIf="i.ItemId"><b>{{i.UoM}}</b></div> -->
