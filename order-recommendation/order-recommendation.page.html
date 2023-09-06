@@ -15,7 +15,7 @@
 </ion-header>
 
 <ion-content appScrollbarTheme class="header-table scrollx" forceOverscroll="false">
-	<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+	
 
 	<section class="table" style="min-width: calc(1024px);">
 		<header class="bold">
@@ -94,59 +94,54 @@
 					<input [ngModelOptions]="{standalone: true}" [(ngModel)]="query.Keyword" class="c-input" [ngClass]="{active: query.Keyword}" type="text">
 					<ion-icon class="min-btn" (click)="query.Keyword=''; refresh()" *ngIf="query.Keyword" name="close-circle-outline"></ion-icon>
 				</div>
-				
+
 				<button mat-raised-button type="submit" style="display:none">Search</button>
 			</header>
 		</form>
 		<app-page-message [itemsLength]="items.length" [showSpinner]="pageConfig.showSpinner"></app-page-message>
 
-		<ion-virtual-scroll [items]="items" approxItemHeight="27px">
-			<ng-container *virtualItem="let i; let itemBounds = bounds; let j = index;">
-				<div class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
-					<!-- <div class="col-checkbox cell">
-						<input *ngIf="i.ItemId" (click)="changeSelection(i, $event)" class="c-checkbox" [(ngModel)]="i.checked" type="checkbox">
-					</div> -->
-					<div class="col-id cell">
-						<span *ngIf="i.ItemId">
-							{{i.Id}}
-						</span>
-					</div>
-					<div class="col-mrpname cell">
-						<span *ngIf="i.MRPName">
-							{{i.MRPName}}
-						</span>
-						<span *ngIf="!i.MRPName">
-							{{i.MRPName}}
-						</span>
-					</div>
-					<div class="col-name cell">
-						<span *ngIf="i.ItemId">
-							<b>{{i.ItemCode}}</b> - {{i.ItemName}}
-						</span>
-						<span *ngIf="!i.ItemId" class="vendor-name">
-							<a [href]="'#/'+'business-partner/'+i.VendorId" (click)="nav('business-partner/'+i.VendorId,'forward')" title="{{'Vendor' | translate}}">
-								{{i.VendorId}} <ion-icon name="open-outline"></ion-icon>
-							</a>
-							{{i.VendorName}}
-						</span>
-					</div>
-					<!-- <div class="col-id cell" *ngIf="i.ItemId"><b>{{i.UoM}}</b></div> -->
-					<div class="col-number cell" *ngIf="i.ItemId">
-						<b *ngIf="i.ItemId">{{i.QuantityOrdered}} <small>{{i.UoM}}</small></b>
-					</div>
-					<div class="col-date cell" *ngIf="i.ItemId"><span *ngIf="i.ItemId">{{i.DueDateText}}</span></div>
-					<div class="col-checkbox cell">
-						<input *ngIf="!i.ItemId" class="c-checkbox" type="checkbox" [(ngModel)]="i.checked" (change)="changeVendor(i)">
-					</div>
-					<!-- <div class="col-id cell"> <span *ngIf="!i.ItemId">{{i.KPI}}</span> </div> -->
-					<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.PriceText}}</span></div>
-					<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.Quality}}</span></div>
-					<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.Delivery}}</span></div>
-					<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.Payment}}</span></div>
+		<div *ngFor="let i of items; let j = index;" class="row" [ngClass]="{odd: j % 2 != 0}" [ngClass]="{selected: i.checked}">
 
-				</div>
-			</ng-container>
-		</ion-virtual-scroll>
+			<div class="col-id cell">
+				<span *ngIf="i.ItemId">
+					{{i.Id}}
+				</span>
+			</div>
+			<div class="col-mrpname cell">
+				<span *ngIf="i.MRPName">
+					{{i.MRPName}}
+				</span>
+				<span *ngIf="!i.MRPName">
+					{{i.MRPName}}
+				</span>
+			</div>
+			<div class="col-name cell">
+				<span *ngIf="i.ItemId">
+					<b>{{i.ItemCode}}</b> - {{i.ItemName}}
+				</span>
+				<span *ngIf="!i.ItemId" class="vendor-name">
+					<a [href]="'#/'+'business-partner/'+i.VendorId" (click)="nav('business-partner/'+i.VendorId,'forward')" title="{{'Vendor' | translate}}">
+						{{i.VendorId}} <ion-icon name="open-outline"></ion-icon>
+					</a>
+					{{i.VendorName}}
+				</span>
+			</div>
+
+			<div class="col-number cell" *ngIf="i.ItemId">
+				<b *ngIf="i.ItemId">{{i.QuantityOrdered}} <small>{{i.UoM}}</small></b>
+			</div>
+			<div class="col-date cell" *ngIf="i.ItemId"><span *ngIf="i.ItemId">{{i.DueDateText}}</span></div>
+			<div class="col-checkbox cell">
+				<input *ngIf="!i.ItemId" class="c-checkbox" type="checkbox" [(ngModel)]="i.checked" (change)="changeVendor(i)">
+			</div>
+
+			<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.PriceText}}</span></div>
+			<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.Quality}}</span></div>
+			<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.Delivery}}</span></div>
+			<div class="col-number cell"><span *ngIf="!i.ItemId">{{i.Payment}}</span></div>
+
+		</div>
+
 	</section>
 
 	<ion-infinite-scroll color="primary" threshold="20%" (ionInfinite)="loadData($event)" [disabled]="!pageConfig.infiniteScroll || pageConfig.isEndOfData">
