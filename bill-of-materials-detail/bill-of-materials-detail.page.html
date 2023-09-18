@@ -93,10 +93,11 @@
 									</label>
 									<ng-select class="c-input" (change)="saveChange();" labelForId="IDItem" formControlName="IDItem" [items]="itemList$ | async" [typeahead]="itemListInput$" [virtualScroll]="true" bindLabel="Name" bindValue="Id" placeholder="{{'erp.app.pages.product.bill-of-material.item-placeholder' | translate}}">
 										<ng-template ng-label-tmp let-i="item">
-											<b *ngIf="i.Code" [title]="i.Id">
-												{{i.Code}}
-											</b>
-											{{i.Name}}
+											<div *ngIf="i.Id">
+												<a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()">#{{i.Id}} <ion-icon name="open-outline"></ion-icon></a>
+												<span [title]="i.Name"> <b *ngIf="i.Code" (mousedown)="$event.stopPropagation()">{{i.Code}}</b> {{i.Name}}</span>
+
+											</div>
 										</ng-template>
 										<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
 											<div *ngIf="i">
@@ -170,6 +171,7 @@
 						<div class="table-contain">
 							<section class="table" style="min-width: 1270px;">
 								<header class="bold" style="padding-right: 0;">
+									<div class="col-reorder cell" *ngIf="pageConfig.canEdit"></div>
 									<div class="col-id cell">#</div>
 									<div class="col-uom cell">{{'erp.app.pages.product.bill-of-material.uom-type' | translate}}</div>
 									<div class="col-name cell">{{'erp.app.pages.product.bill-of-material.uom-name' | translate}}</div>
@@ -212,16 +214,16 @@
 													<div class="col-name cell">
 														<ng-select formControlName="_Item" appendTo="#order-detail-page" [readonly]="!pageConfig.canEdit || submitAttempt" class="c-input" (change)="changedIDItem(g, $event)" [labelForId]="'IDItem'+idx" [items]="g.controls._ItemDataSource.value | async" [clearable]="false" [typeahead]="g.controls._ItemSearchInput.value" [loading]="g.controls._ItemSearchLoading.value" [virtualScroll]="true" bindLabel="Name" placeholder="{{'erp.app.pages.product.bill-of-material.item-placeholder' | translate}}">
 															<ng-template ng-label-tmp let-i="item">
-																<b *ngIf="i.Code" [title]="i.Id">
-																	{{i.Code}}
-																</b>
-																{{i.Name}}
+																<div *ngIf="i.Id">
+																	<a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()">#{{i.Id}} <ion-icon name="open-outline"></ion-icon></a>
+																	<span [title]="i.Name"> <b *ngIf="i.Code" (mousedown)="$event.stopPropagation()">{{i.Code}}</b> {{i.Name}}</span>
+				
+																</div>
 															</ng-template>
 															<ng-template ng-option-tmp let-i="item" let-search="searchTerm">
 																<div *ngIf="i">
 																	<div><span [ngOptionHighlight]="search">{{i.Name}}</span></div>
-																	<small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}}
-																				- {{i.Code}}</span></b></small>
+																	<small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b></small>
 																</div>
 															</ng-template>
 														</ng-select>
