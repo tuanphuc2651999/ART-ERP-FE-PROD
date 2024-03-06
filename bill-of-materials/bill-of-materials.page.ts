@@ -7,42 +7,40 @@ import { Location } from '@angular/common';
 import { lib } from 'src/app/services/static/global-functions';
 
 @Component({
-    selector: 'app-bill-of-materials',
-    templateUrl: 'bill-of-materials.page.html',
-    styleUrls: ['bill-of-materials.page.scss']
+  selector: 'app-bill-of-materials',
+  templateUrl: 'bill-of-materials.page.html',
+  styleUrls: ['bill-of-materials.page.scss'],
 })
 export class BillOfMaterialsPage extends PageBase {
-    typeList = [];
+  typeList = [];
 
-    constructor(
-        public pageProvider: PROD_BillOfMaterialsProvider,
-        public branchProvider: BRA_BranchProvider,
-        public modalController: ModalController,
-		public popoverCtrl: PopoverController,
-        public alertCtrl: AlertController,
-        public loadingController: LoadingController,
-        public env: EnvService,
-        public navCtrl: NavController,
-        public location: Location,
-    ) {
-        super();
-    }
+  constructor(
+    public pageProvider: PROD_BillOfMaterialsProvider,
+    public branchProvider: BRA_BranchProvider,
+    public modalController: ModalController,
+    public popoverCtrl: PopoverController,
+    public alertCtrl: AlertController,
+    public loadingController: LoadingController,
+    public env: EnvService,
+    public navCtrl: NavController,
+    public location: Location,
+  ) {
+    super();
+  }
 
-    preLoadData(event){
-        this.sort.Id = 'Id';
-        this.sortToggle('Id', true);
-        super.preLoadData(event);
-    }
+  preLoadData(event) {
+    this.sort.Id = 'Id';
+    this.sortToggle('Id', true);
+    super.preLoadData(event);
+  }
 
-    loadedData(event){
-        this.env.getType('BOMType').then(data => {
-            this.typeList = data;
-            this.items.forEach(i => {
-                i.TypeName = lib.getAttrib(i.Type, this.typeList, 'Name', '', 'Code');
-            });
-            super.loadedData(event);
-        });
-        
-        
-    }
+  loadedData(event) {
+    this.env.getType('BOMType').then((data) => {
+      this.typeList = data;
+      this.items.forEach((i) => {
+        i.TypeName = lib.getAttrib(i.Type, this.typeList, 'Name', '', 'Code');
+      });
+      super.loadedData(event);
+    });
+  }
 }

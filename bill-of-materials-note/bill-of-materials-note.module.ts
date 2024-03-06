@@ -13,8 +13,8 @@ import { ShareModule } from 'src/app/share.module';
     FormsModule,
     ReactiveFormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: BillOfMaterialsNotePage }])
+    RouterModule.forChild([{ path: '', component: BillOfMaterialsNotePage }]),
   ],
-  declarations: [BillOfMaterialsNotePage]
+  declarations: [BillOfMaterialsNotePage],
 })
 export class BillOfMaterialsNotePageModule {}

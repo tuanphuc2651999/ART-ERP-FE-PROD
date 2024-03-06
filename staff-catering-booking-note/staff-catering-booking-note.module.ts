@@ -15,8 +15,8 @@ import { StaffCateringBookingComponentsModule } from './components/staff-caterin
     ReactiveFormsModule,
     ShareModule,
     StaffCateringBookingComponentsModule,
-    RouterModule.forChild([{ path: '', component: StaffCateringBookingNotePage }])
+    RouterModule.forChild([{ path: '', component: StaffCateringBookingNotePage }]),
   ],
-  declarations: [StaffCateringBookingNotePage]
+  declarations: [StaffCateringBookingNotePage],
 })
 export class StaffCateringBookingNotePageModule {}

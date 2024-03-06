@@ -14,8 +14,8 @@ import { OrderRecommendationModalPage } from '../order-recommendation-modal/orde
     IonicModule,
     ReactiveFormsModule,
     ShareModule,
-    RouterModule.forChild([{ path: '', component: OrderRecommendationPage }])
+    RouterModule.forChild([{ path: '', component: OrderRecommendationPage }]),
   ],
-  declarations: [OrderRecommendationPage, OrderRecommendationModalPage]
+  declarations: [OrderRecommendationPage, OrderRecommendationModalPage],
 })
 export class OrderRecommendationPageModule {}
