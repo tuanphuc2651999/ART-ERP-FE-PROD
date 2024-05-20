@@ -16,12 +16,12 @@
 			</div>
 		
 			<div class="col-date cell" (click)="sortToggle('StartDate')">
-				{{'From date' | translate}}
+				{{'Start date' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.WarehouseCode" [name]="sort.StartDate == 'StartDate'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.StartDate" name="search" color="primary"></ion-icon>
 			</div>
 			<div class="col-date cell" (click)="sortToggle('EndDate')">
-				{{'To date' | translate}}
+				{{'End date' | translate}}
 				<ion-icon class="min-btn" *ngIf="sort.EndDate" [name]="sort.EndDate == 'EndDate'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.EndDate" name="search" color="primary"></ion-icon>
 			</div>

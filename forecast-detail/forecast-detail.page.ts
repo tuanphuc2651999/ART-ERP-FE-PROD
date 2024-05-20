@@ -5,6 +5,8 @@ import { ActivatedRoute } from '@angular/router';
 import { EnvService } from 'src/app/services/core/env.service';
 import {
   BRA_BranchProvider,
+  SALE_ForecastDetailProvider,
+  SALE_ForecastProvider,
   // PROD_ForecastDetailProvider,
   // PROD_ForecastProvider,
   SYS_TypeProvider,
@@ -31,8 +33,8 @@ export class ForecastDetailPage extends PageBase {
   removedItems = [];
 
   constructor(
-    public pageProvider: WMS_ItemProvider, //PROD_ForecastProvider,
-    public forecastDetailService: WMS_ItemProvider, //PROD_ForecastProvider,
+    public pageProvider: SALE_ForecastProvider, //PROD_ForecastProvider,
+    public forecastDetailService: SALE_ForecastDetailProvider, //PROD_ForecastProvider,
     // public bomDetailProvider: PROD_ForecastDetailProvider,
     public branchProvider: BRA_BranchProvider,
     public itemProvider: WMS_ItemProvider,
@@ -53,11 +55,14 @@ export class ForecastDetailPage extends PageBase {
 
     this.formGroup = formBuilder.group({
       Id: new FormControl({ value: 0, disabled: true }),
-      IDBranch: [''],
-      StartDate: [''],
-      EndDate: [''],
+      IDBranch: new FormControl({
+        value: this.env.selectedBranch,
+        disabled: false,
+      }),
+      StartDate: ['', Validators.required],
+      EndDate: ['', Validators.required],
       Name: [''],
-      Period: ['Daily'],
+      Period: ['Daily', Validators.required],
       Rows: this.formBuilder.array([]),
       Lines: this.formBuilder.array([]),
       Remark: [''],
@@ -95,96 +100,38 @@ export class ForecastDetailPage extends PageBase {
       });
     super.preLoadData(event);
   }
-  loadData(event) {
-    this.item ={};
-    this.item = {
-      Id: 1,
-      Code: null,
-      Name: 'Forecast 1',
-      IDBranch: 616,
-      StartDate: '2024-01-21',
-      EndDate: '2024-01-31',
-      Period: 'Daily',
-      IsDeleted: false,
-      IsDisabled: false,
-      Remark: 'aaa',
-      CreatedBy: 'Puc',
-      ModifiedBy: 'Puc',
-      ModifiedDate: '2024-01-01',
-      CreatedDate: '2024-01-01',
-      Lines: [
-        {
-          Id: 1,
-          IDForecast: 1,
-          IDWarehouse: 1,
-          IDItem: 9716,
-          ItemName: 'Chè khúc bạch',
-          UoMs: [
-            { Id: 1, Name: 'Khách' },
-            { Id: 2, Name: 'Nhóm' },
-          ],
-          IDUoM: 1,
-          Date: '2024-01-01',
-          Quantity: 100,
-        },
-        {
-          Id: 2,
-          IDForecast: 1,
-          IDWarehouse: 1,
-          IDItem: 9716,
-          ItemName: 'Chè khúc bạch',
-          IDUoM: 1,
-          UoMs: [
-            { Id: 1, Name: 'Khách' },
-            { Id: 2, Name: 'Nhóm' },
-          ],
-          Date: '2024-01-22',
-          Quantity: 160,
-        },
-        {
-          Id: 1,
-          IDForecast: 1,
-          IDWarehouse: 1,
-          IDItem: 9717,
-          ItemName: 'Sâm bổ lượng',
-          IDUoM: 3,
-          UoMs: [
-            { Id: 3, Name: 'Ly' },
-            { Id: 4, Name: 'Tô' },
-          ],
-          Date: '2024-01-28',
-          Quantity: 120,
-        },
-        {
-          Id: 2,
-          IDForecast: 1,
-          IDWarehouse: 1,
-          IDItem: 9717,
-          ItemName: 'Sâm bổ lượng',
-          UoMs: [
-            { Id: 3, Name: 'Ly' },
-            { Id: 4, Name: 'Tô' },
-          ],
-          IDUoM: 3,
-          Date: '2024-01-29',
-          Quantity: 130,
-        },
-      ],
-    };
-    this.loadedData();
-  }
 
   loadedData(event?: any, ignoredFromGroup?: boolean): void {
     super.loadedData(event, ignoredFromGroup);
-    this.renderView();
-    this.patchLinesValue();
+    this.formGroup.controls.Period.markAsDirty();
+    this.formGroup.controls.IDBranch.markAsDirty();
+    if(this.item.Id>0){
+      let queryDetail = {
+        IDForecast : this.item.Id
+      }
+ 
+      this.forecastDetailService.read(queryDetail,false).then((listForecastDetail:any) =>{
+        if(listForecastDetail!= null && listForecastDetail.data.length>0){
+            const forecastDetailsArray = this.formGroup.get('Lines') as FormArray;
+            forecastDetailsArray.clear();
+            this.item.Lines = listForecastDetail.data;
+            this.item.Lines.forEach(i => i.Date = lib.dateFormat(i.Date));
+            this.renderView();
+            this.patchLinesValue();
+        }
+        else{
+          this.renderView();
+        }
+      })
+    }
+
+
   }
   renderView(reRender = false) {
-    if(!this.formGroup.get('StartDate').value || !this.formGroup.get('EndDate').value){
+    if(!this.formGroup.get('StartDate').value || !this.formGroup.get('EndDate').value || !this.formGroup.get('Period').value){
       return;
     }
-    const Lines = this.formGroup.get('Lines') as FormArray;
-    Lines.clear();
+
     let dates = [];
     this.columnView = [];
     let startDate = new Date(this.formGroup.get('StartDate').value);
@@ -240,47 +187,64 @@ export class ForecastDetailPage extends PageBase {
     console.log(this.columnView);
    
     if(reRender){
-      if (this.pageConfig.canDelete) {
-        let groups = <FormArray>this.formGroup.controls.Lines;
-  
-        let itemsToDelete = groups.controls.map(s=> s.get('Id').value);
-          this.env .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(itemsToDelete)) .then((_) => {
-          
-              this.env.showTranslateMessage('erp.app.app-component.page-bage.delete-complete', 'success');
-              this.isAllChecked = false;
-              this.patchLinesValue();
-            })
-            .catch((err) => {
-              const Lines = this.formGroup.get('Lines') as FormArray;
-              Lines.clear();
-              this.item.Lines = [];
-              this.patchLinesValue();// temp
-              this.env.showMessage('Không xóa được, xin vui lòng kiểm tra lại.');
-              console.log(err);
-            });
+      const Lines = this.formGroup.get('Lines') as FormArray;
+        if(Lines.controls.length>0){
+          if (this.pageConfig.canDelete) {
+            this.env .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(this.item.Lines)) .then((_) => {
+            
+                this.env.showTranslateMessage('erp.app.app-component.page-bage.delete-complete', 'success');
+                this.isAllChecked = false;
+                Lines.clear();
+                this.patchLinesValue();
+                let obj: any = {
+                  id: this.formGroup.get('Id').value,
+                  items: this.formGroup.controls.Lines.getRawValue()
+              }
+                this.commonService.connect('POST','SALE/Forecast/PostListDetail',obj).toPromise().then((result: any) => {
+                this.saveChange2(); // savechange View hoặc Date
+
+              })
+              })
+              .catch((err) => {
+              
+                this.env.showMessage('Không xóa được, xin vui lòng kiểm tra lại.');
+                console.log(err);
+              });
+        }
+      }
+      else{
+        this.saveChange2();
       }
     }
     else{
-      const groupedLines = this.item.Lines.reduce((acc, line) => {
-        // Create a unique key for grouping
-        const key = `${line.IDItem}-${line.IDUoM}`;
-        // Check if the key already exists in the accumulator
-        if (!acc[key]) {
-          // If not, add the line with its current properties
-          acc[key] = { ...line ,Key: key};
-        }
-        return acc;
-      }, {});
-      this.itemsState = Object.values(groupedLines);
-      this.itemsState.forEach((is) => {
-        this.addRows(is);
-      });
+      if(this.item.Lines?.length>0){
+        const groupedLines = this.item.Lines.reduce((acc, line) => {
+          // Create a unique key for grouping
+          const key = `${line.IDItem}-${line.IDUoM}`;
+          // Check if the key already exists in the accumulator
+          if (!acc[key]) {
+            // If not, add the line with its current properties
+            acc[key] = { ...line ,Key: key};
+          }
+          return acc;
+        }, {});
+        this.itemsState = Object.values(groupedLines);
+        let rows = this.formGroup.get('Rows') as FormArray;
+        this.itemsState.forEach((is) => {
+          if(!rows.getRawValue().find(d=>d.Key == is.Key)){
+            this.addRows(is);
+            
+          }
+        });
+      }
+    
     }
 
-}
+  }
  
 
   private patchLinesValue() {
+    this.formGroup.controls.Lines = new FormArray([]);
     this.pageConfig.showSpinner = true;
     this.columnView.forEach((d) => {
       this.itemsState.forEach((state,index) => {
@@ -289,23 +253,24 @@ export class ForecastDetailPage extends PageBase {
         );
         if (line) {
           this.addLine(line);
-        } else {
-          this.addLine(
-            {
-              IDForecast: this.item.Id,
-              IDItem: state.IDItem,
-              Key :  state.IDItem+'-'+ state.IDUoM,
-              Quantity: 0,
-              Id : 0,
-              // UoMName: [line.UoMName],
-              // ItemName: [line.ItemName], //de hien thi
-              IDUoM: state.IDUoM, //de hien thi
-              Date: d.Date,
-            },
-            true,
-          );
-        }
-      });
+        } 
+        else {
+            this.addLine(
+              {
+                IDForecast: this.item.Id,
+                IDItem: state.IDItem,
+                Key :  state.IDItem+'-'+ state.IDUoM,
+                Quantity: 0,
+                Id : 0,
+                // UoMName: [line.UoMName],
+                // ItemName: [line.ItemName], //de hien thi
+                IDUoM: state.IDUoM, //de hien thi
+                Date: d.Date,
+              },
+              true,
+            );
+          }
+        });
     });
 
     // if (this.item.Lines?.length) {
@@ -343,10 +308,12 @@ export class ForecastDetailPage extends PageBase {
       IsChecked: new FormControl({ value: false, disabled: false }),
     });
     // group.get('_IDItemDataSource').value?.initSearch();
+    group.get('IDForecast').markAsDirty();
+    group.get('IDItem').markAsDirty();
+    group.get('IDUoM').markAsDirty();
+    group.get('Date').markAsDirty();
     groups.push(group);
-    if(markAsDirty){
-      //save change
-    }
+  
   }
 
   addRows(line: any,addNew = false) {
@@ -440,12 +407,21 @@ export class ForecastDetailPage extends PageBase {
             // ItemName: [line.ItemName], //de hien thi
             IDUoM:  row.get('IDUoM').value, //de hien thi
             Date: c.Date,
-          },
-            true,
-          );
+          });
       });
+      let obj: any = {
+        id: this.formGroup.get('Id').value,
+        items: this.formGroup.controls.Lines.getRawValue()
+    }
+    
+      this.commonService.connect('POST','SALE/Forecast/PostListDetail',obj).toPromise().then((result: any) => {
+        if(result>0){
+            this.loadedData();   
+        }
+    })
     }
   }
+
 
   isAllChecked = false;
   checkedRows: any = new FormArray([]);
@@ -454,20 +430,25 @@ export class ForecastDetailPage extends PageBase {
     let groupLines = <FormArray>this.formGroup.controls.Lines;
     let deleteLines = [];
     let filteredIds = groupLines.controls .filter( (lineControl) => lineControl.get('Key').value === fg.get('Key').value );
-    let deleteIds = filteredIds?.map((filteredControl) => filteredControl.get('Id').value);
-    deleteLines = [...deleteLines,...deleteIds];
-    this.env.showPrompt('Bạn chắc muốn xóa ?', null, 'Xóa ' + deleteLines.length + ' dòng').then((_) => {
-      this.forecastDetailService.delete(deleteLines) .then((_) => {
+  //  let deleteIds = filteredIds?.map((filteredControl) => filteredControl.get('Id').value);
+   let deletedIds =filteredIds?.map(fg=>{
+    return {
+      Id : fg.get('Id').value
+    }
+
+   })
+    this.env.showPrompt('Bạn chắc muốn xóa ?', null, 'Xóa ' + deletedIds.length + ' dòng').then((_) => {
+      this.forecastDetailService.delete(deletedIds) .then((_) => {
         this.env
-          .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(deleteLines))
+          .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(deletedIds))
           .then((_) => {
             const indexRowToRemove = groupRows.controls.findIndex(rowControl => rowControl.get('Key').value === fg.get('Key').value );
 
             groupRows.removeAt(indexRowToRemove);
 
-            deleteLines?.forEach((d) => {
+            deletedIds?.forEach((d) => {
               const indexLineToRemove = groupLines.controls.findIndex(
-                (lineControl) => lineControl.get('Id').value == d,
+                (lineControl) => lineControl.get('Id').value == d.Id,
               );
 
               if(indexRowToRemove){
@@ -530,8 +511,11 @@ export class ForecastDetailPage extends PageBase {
     this.checkedRows.controls.forEach((fg) => {
   
       let filteredIds = groupLines.controls .filter( (lineControl) => lineControl.get('Key').value === fg.get('Key').value );
-      let deleteIds = filteredIds?.map((filteredControl) => filteredControl.get('Id').value);
-      deleteLines = [...deleteLines,...deleteIds];
+      deleteLines = filteredIds?.map(fg=>{
+        return {
+          Id : fg.get('Id').value
+        }
+      })
     });
     deleteLines = [... new Set(deleteLines)];
     this.env
@@ -579,14 +563,21 @@ export class ForecastDetailPage extends PageBase {
         if (this.isAllChecked) this.checkedRows.push(i)
     });
 }
-  changeView() {
-    this.renderView(true);
-
+changePeriodAndDate() {
+  let groupLines = <FormArray>this.formGroup.controls.Lines;
+  if(groupLines.controls.length>0){
+    this.env.showPrompt('Thay đổi chu kỳ sẽ xoá hết dữ liệu dự báo, bạn có tiếp tục?', null, 'Xóa').then(_=>{
+      this.formGroup.get('Period').markAsDirty();
+      this.renderView(true);
+    }).catch(er => {
+      this.refresh();
+    });
   }
-  changeDate(){
-    this.renderView(true);
-
+  else{
+    this.saveChange2();
   }
+ 
+}
 
   getWeekNumber(date)  {
     // Copy the date so we don't modify the original
@@ -606,7 +597,9 @@ export class ForecastDetailPage extends PageBase {
     return daysOfWeek[date.getDay()];
   }
 
-  async saveChange() {}
+  // async saveChange() {
+  //   this.saveChange2();
+  // }
 
   saveChangeDetail(fg: FormGroup) {
     this.saveChange2(fg, null, this.forecastDetailService)
