@@ -25,10 +25,10 @@
 				<ion-icon class="min-btn" *ngIf="sort.EndDate" [name]="sort.EndDate == 'EndDate'?'arrow-down': 'arrow-up'"></ion-icon>
 				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.EndDate" name="search" color="primary"></ion-icon>
 			</div>
-			<div class="col-code cell" (click)="sortToggle('View')">
-				{{'View' | translate}}
-				<ion-icon class="min-btn" *ngIf="sort.View" [name]="sort.View == 'View'?'arrow-down': 'arrow-up'"></ion-icon>
-				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.View" name="search" color="primary"></ion-icon>
+			<div class="col-code cell" (click)="sortToggle('Period')">
+				{{'Period' | translate}}
+				<ion-icon class="min-btn" *ngIf="sort.Period" [name]="sort.Period == 'Period'?'arrow-down': 'arrow-up'"></ion-icon>
+				<ion-icon class="min-btn" (click)="pageConfig.isShowSearch = !pageConfig.isShowSearch" *ngIf="query.Period" name="search" color="primary"></ion-icon>
 			</div>
 		</header>
 		<form (submit)="refresh()" action="#">
@@ -112,7 +112,7 @@
 							{{i.EndDate | date: 'dd/MM/yyyy'}}
 						</div>
 						<div class="col-code cell">
-							{{i.View}}
+							{{i.Period}}
 						</div>
 					</div>
 				

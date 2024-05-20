@@ -57,7 +57,7 @@ export class ForecastDetailPage extends PageBase {
       StartDate: [''],
       EndDate: [''],
       Name: [''],
-      View: ['Daily'],
+      Period: ['Daily'],
       Rows: this.formBuilder.array([]),
       Lines: this.formBuilder.array([]),
       Remark: [''],
@@ -104,7 +104,7 @@ export class ForecastDetailPage extends PageBase {
       IDBranch: 616,
       StartDate: '2024-01-21',
       EndDate: '2024-01-31',
-      View: 'Daily',
+      Period: 'Daily',
       IsDeleted: false,
       IsDisabled: false,
       Remark: 'aaa',
@@ -190,7 +190,7 @@ export class ForecastDetailPage extends PageBase {
     let startDate = new Date(this.formGroup.get('StartDate').value);
     let endDate = new Date(this.formGroup.get('EndDate').value);
     
-    if (this.formGroup.get('View').value === 'Daily') {
+    if (this.formGroup.get('Period').value === 'Daily') {
       let dateBetweens = lib.getStartEndDates(startDate,endDate);
       dateBetweens.forEach(date=>{
         date = new Date(date.Date);
@@ -202,7 +202,7 @@ export class ForecastDetailPage extends PageBase {
         });
     });
     }
-    else if (this.formGroup.get('View').value === 'Weekly') {
+    else if (this.formGroup.get('Period').value === 'Weekly') {
      
       startDate = lib.getWeekDates(startDate)[1];
       let endWeeks = lib.getWeekDates(endDate);
@@ -221,7 +221,7 @@ export class ForecastDetailPage extends PageBase {
         }
       });
     }
-    else if (this.formGroup.get('View').value === 'Monthly') {
+    else if (this.formGroup.get('Period').value === 'Monthly') {
       startDate.setDate(1);
        endDate = new Date(endDate.getFullYear(), endDate.getMonth() + 1, 0);
       let dateBetweens = lib.getStartEndDates(startDate,endDate);
