@@ -64,7 +64,7 @@ export class ForecastDetailPage extends PageBase {
       Name: [''],
       Period: ['Daily', Validators.required],
       Rows: this.formBuilder.array([]),
-      Lines: this.formBuilder.array([]),
+      Cells: this.formBuilder.array([]),
       Remark: [''],
       IsDisabled: new FormControl({ value: '', disabled: true }),
       IsDeleted: [''],
@@ -106,33 +106,16 @@ export class ForecastDetailPage extends PageBase {
     this.formGroup.controls.Period.markAsDirty();
     this.formGroup.controls.IDBranch.markAsDirty();
     if(this.item.Id>0){
-      let queryDetail = {
-        IDForecast : this.item.Id
-      }
- 
-      this.forecastDetailService.read(queryDetail,false).then((listForecastDetail:any) =>{
-        if(listForecastDetail!= null && listForecastDetail.data.length>0){
-            const forecastDetailsArray = this.formGroup.get('Lines') as FormArray;
-            forecastDetailsArray.clear();
-            this.item.Lines = listForecastDetail.data;
-            this.item.Lines.forEach(i => i.Date = lib.dateFormat(i.Date));
-            this.renderView();
-            this.patchLinesValue();
-        }
-        else{
-          this.renderView();
-        }
-      })
+      this.item.ForeCastDetails?.forEach(i => i.Date = lib.dateFormat(i.Date));
+      this.renderView();
+      this.patchCellsValue();
+     
     }
-
-
   }
   renderView(reRender = false) {
     if(!this.formGroup.get('StartDate').value || !this.formGroup.get('EndDate').value || !this.formGroup.get('Period').value){
       return;
     }
-
-    let dates = [];
     this.columnView = [];
     let startDate = new Date(this.formGroup.get('StartDate').value);
     let endDate = new Date(this.formGroup.get('EndDate').value);
@@ -147,7 +130,7 @@ export class ForecastDetailPage extends PageBase {
           SubTitle: this.getDayOfWeek(date),
           Date: dateFormatted
         });
-    });
+      });
     }
     else if (this.formGroup.get('Period').value === 'Weekly') {
      
@@ -185,86 +168,52 @@ export class ForecastDetailPage extends PageBase {
      
     }
     console.log(this.columnView);
-   
+  
     if(reRender){
-      const Lines = this.formGroup.get('Lines') as FormArray;
-        if(Lines.controls.length>0){
-          if (this.pageConfig.canDelete) {
-            this.env .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(this.item.Lines)) .then((_) => {
-            
-                this.env.showTranslateMessage('erp.app.app-component.page-bage.delete-complete', 'success');
-                this.isAllChecked = false;
-                Lines.clear();
-                this.patchLinesValue();
-                let obj: any = {
-                  id: this.formGroup.get('Id').value,
-                  items: this.formGroup.controls.Lines.getRawValue()
-              }
-                this.commonService.connect('POST','SALE/Forecast/PostListDetail',obj).toPromise().then((result: any) => {
-                this.saveChange2(); // savechange View hoặc Date
-
-              })
-              })
-              .catch((err) => {
-              
-                this.env.showMessage('Không xóa được, xin vui lòng kiểm tra lại.');
-                console.log(err);
-              });
-        }
+      if(this.columnView.length>= 100){
+        this.env.showPrompt('Bạn đang load lượng lớn dữ liệu hơn 100 dòng, bạn có muốn tiếp tục ?', null, 'Tiếp tục').then((_) => {
+          this.reRender();
+        }).catch(err=>{
+          this.refresh();
+        })
       }
       else{
-        this.saveChange2();
+        this.reRender();
+
       }
     }
     else{
-      if(this.item.Lines?.length>0){
-        const groupedLines = this.item.Lines.reduce((acc, line) => {
-          // Create a unique key for grouping
-          const key = `${line.IDItem}-${line.IDUoM}`;
-          // Check if the key already exists in the accumulator
-          if (!acc[key]) {
-            // If not, add the line with its current properties
-            acc[key] = { ...line ,Key: key};
-          }
-          return acc;
-        }, {});
-        this.itemsState = Object.values(groupedLines);
+      if(this.item.Items?.length>0){
         let rows = this.formGroup.get('Rows') as FormArray;
-        this.itemsState.forEach((is) => {
-          if(!rows.getRawValue().find(d=>d.Key == is.Key)){
+        rows.clear();
+        this.item.Items.forEach((is) => {
             this.addRows(is);
-            
-          }
         });
       }
-    
     }
 
   }
  
-
-  private patchLinesValue() {
-    this.formGroup.controls.Lines = new FormArray([]);
+  private patchCellsValue() {
+    this.formGroup.controls.Cells = new FormArray([]);
     this.pageConfig.showSpinner = true;
     this.columnView.forEach((d) => {
-      this.itemsState.forEach((state,index) => {
-        let line = this.item.Lines.find(
+      this.item.Items.forEach((state,index) => {
+        let cell = this.item.ForeCastDetails.find(
           (x) => x.Date == d.Date && x.IDItem == state.IDItem && x.IDItem && state.IDUoM == x.IDUoM,
         );
-        if (line) {
-          this.addLine(line);
+        if (cell) {
+          this.addCell(cell);
         } 
         else {
-            this.addLine(
+            this.addCell(
               {
                 IDForecast: this.item.Id,
                 IDItem: state.IDItem,
                 Key :  state.IDItem+'-'+ state.IDUoM,
                 Quantity: 0,
                 Id : 0,
-                // UoMName: [line.UoMName],
-                // ItemName: [line.ItemName], //de hien thi
-                IDUoM: state.IDUoM, //de hien thi
+                IDUoM: state.IDUoM, 
                 Date: d.Date,
               },
               true,
@@ -273,38 +222,32 @@ export class ForecastDetailPage extends PageBase {
         });
     });
 
-    // if (this.item.Lines?.length) {
-    //   this.item.Lines.forEach((i) => {
-    //     this.addLine(i);
-    //   });
-    // }
-
     if (!this.pageConfig.canEdit) {
-      this.formGroup.controls.Lines.disable();
+      this.formGroup.controls.Cells.disable();
     }
 
     this.pageConfig.showSpinner = false;
     console.log(this.formGroup);
   }
-  addLine(line: any, markAsDirty = false) {
-    let groups = <FormArray>this.formGroup.controls.Lines;
+  addCell(cell: any, markAsDirty = false) {
+    let groups = <FormArray>this.formGroup.controls.Cells;
     let group = this.formBuilder.group({
-      Id: new FormControl({ value: line.Id, disabled: true }),
-      IDForecast: new FormControl({ value: line.IDForecast, disabled: true }),
-      Key: new FormControl({ value: line.IDItem+'-'+line.IDUoM, disabled: true }),
-      Name: [line.Name],
-      IDItem: [line.IDItem, Validators.required],
-      Quantity: [line.Quantity],
-      // UoMName: [line.UoMName],
-      // ItemName: [line.ItemName], //de hien thi
-      IDUoM: [line.IDUoM], //de hien thi
-      Date: [line?.Date],
-      IsDisabled: new FormControl({ value: line.IsDisabled, disabled: true }),
-      IsDeleted: new FormControl({ value: line.IsDeleted, disabled: true }),
-      CreatedBy: new FormControl({ value: line.CreatedBy, disabled: true }),
-      CreatedDate: new FormControl({ value: line.CreatedDate, disabled: true }),
-      ModifiedBy: new FormControl({ value: line.ModifiedBy, disabled: true }),
-      ModifiedDate: new FormControl({ value: line.ModifiedDate, disabled: true }),
+      Id: new FormControl({ value: cell.Id, disabled: true }),
+      IDForecast: new FormControl({ value: cell.IDForecast, disabled: true }),
+      Key: new FormControl({ value: cell.IDItem+'-'+cell.IDUoM, disabled: true }),
+      Name: [cell.Name],
+      IDItem: [cell.IDItem, Validators.required],
+      Quantity: [cell.Quantity],
+      // UoMName: [cell.UoMName],
+      // ItemName: [cell.ItemName], //de hien thi
+      IDUoM: [cell.IDUoM], //de hien thi
+      Date: [cell?.Date],
+      IsDisabled: new FormControl({ value: cell.IsDisabled, disabled: true }),
+      IsDeleted: new FormControl({ value: cell.IsDeleted, disabled: true }),
+      CreatedBy: new FormControl({ value: cell.CreatedBy, disabled: true }),
+      CreatedDate: new FormControl({ value: cell.CreatedDate, disabled: true }),
+      ModifiedBy: new FormControl({ value: cell.ModifiedBy, disabled: true }),
+      ModifiedDate: new FormControl({ value: cell.ModifiedDate, disabled: true }),
       IsChecked: new FormControl({ value: false, disabled: false }),
     });
     // group.get('_IDItemDataSource').value?.initSearch();
@@ -316,10 +259,10 @@ export class ForecastDetailPage extends PageBase {
   
   }
 
-  addRows(line: any,addNew = false) {
+  addRows(row: any,addNew = false) {
     let groups = <FormArray>this.formGroup.controls.Rows;
     let group = this.formBuilder.group({
-      Key :[line?.Key],
+      Key :[row?.Key || row?.IDItem+'-'+row?.IDUoM],
       _IDItemDataSource: [
         {
           searchProvider: this.itemProvider,
@@ -327,8 +270,8 @@ export class ForecastDetailPage extends PageBase {
           input$: new Subject<string>(),
           selected: [
             {
-              Id: line?.IDItem,
-              Name: line?.ItemName,
+              Id: row?.IDItem,
+              Name: row?.ItemName,
             },
           ],
           items$: null,
@@ -357,20 +300,76 @@ export class ForecastDetailPage extends PageBase {
           },
         },
       ],
-      _UoMDataSource: [line?.UoMs],
-      IDForecast: new FormControl({ value: line?.IDForecast, disabled: true }),
-      Name: [line?.Name],
-      IDItem: [line?.IDItem, Validators.required],
-      IDUoM: [line?.IDUoM, Validators.required], 
+      _UoMDataSource: [row?.UoMs],
+      IDForecast: new FormControl({ value: row?.IDForecast, disabled: true }),
+      Name: [row?.Name],
+      IDItem: [row?.IDItem, Validators.required],
+      IDUoM: [row?.IDUoM, Validators.required], 
       IsChecked:[false]
     });
     group.get('_IDItemDataSource').value?.initSearch();
     groups.push(group);
-    if(addNew){
-      this.itemsState.push(group.getRawValue());
-    }
   }
+  reRender(){
+      if(this.columnView.length>= 100){
+        this.env.showPrompt('Bạn đang load lượng lớn dữ liệu hơn 100 dòng, bạn có muốn tiếp tục ?', null, 'Tiếp tục').then((_) => {
+        }).catch(err=>{
+          this.refresh();
+        })
+      }
+      const Cells = this.formGroup.get('Cells') as FormArray;
+      if(Cells.controls.length>0){
+            let itemToDeletes = Cells.controls.map(cell=>{
+              return {
+                Id : cell.get('Id').value
+              }
+            })
+          if (this.pageConfig.canDelete) {
+            this.env .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(itemToDeletes)) .then((_) => {
+                this.isAllChecked = false;
+                Cells.clear();
+                const Rows = this.formGroup.get('Rows') as FormArray;
+                let itemsToPush = [];
+                 this.columnView.forEach((d) => {
+                    Rows.controls.forEach((state,index) => {
+                      itemsToPush.push({
+                        IDForecast: this.item.Id,
+                        IDItem: state.get('IDItem').value,
+                        Key : state.get('IDItem').value+'-'+state.get('IDUoM').value,
+                        Quantity: 0,
+                        Id : 0,
+                        IDUoM: state.get('IDUoM').value,
+                        Date : d.Date
+                      })
 
+                      });
+                  });
+               
+                let obj: any = {
+                  id: this.formGroup.get('Id').value,
+                  items: itemsToPush
+              }
+                this.commonService.connect('POST','SALE/Forecast/PostListDetail',obj).toPromise().then((result: any) => {
+                  if(result && result.length>0){
+                    result.forEach(i=> {
+                      i.Date = lib.dateFormat(i.Date);
+                      this.addCell(i,true);
+                    })
+                  }
+                  this.saveChange2(); // savechange View hoặc Date
+                })
+              })
+              .catch((err) => {
+              
+                this.env.showMessage('Không xóa được, xin vui lòng kiểm tra lại.');
+                console.log(err);
+              });
+        }
+      }
+      else{
+        this.saveChange2();
+      }
+  }
   changeItem(ev, row) {
     row.get('IDUoM').setValue('');
     row.get('_UoMDataSource').setValue(ev.UoMs);
@@ -381,42 +380,61 @@ export class ForecastDetailPage extends PageBase {
   }
   changeUoM(row){
     let key = row.get('IDItem').value +'-'+ row.get('IDUoM').value;
-    let groupLines = <FormArray>this.formGroup.controls.Lines;
-    let existedLines = groupLines.controls.filter(line=>line.get('Key').value == row.get('Key').value );
+    let groupCells = <FormArray>this.formGroup.controls.Cells;
+    let existedCells = groupCells.controls.filter(cell=>cell.get('Key').value == row.get('Key').value );
+    let itemsToPassingAPI = []
     row.get('Key').setValue(key);
-    if(existedLines.length>0){
-      existedLines.forEach(line=>{
-        line.get('Key').setValue(key);
-        line.get('IDItem').setValue(row.get('IDItem').value);
-        line.get('IDUoM').setValue(row.get('IDUoM').value);
-        line.get('IDItem').markAsDirty();
-        line.get('IDUoM').markAsDirty();
+    if(existedCells.length>0){
+      existedCells.forEach(cell=>{
+        cell.get('Key').setValue(key);
+        cell.get('IDItem').setValue(row.get('IDItem').value);
+        cell.get('IDUoM').setValue(row.get('IDUoM').value);
+        cell.get('IDItem').markAsDirty();
+        cell.get('IDUoM').markAsDirty();
       })
-      // save change here
-    }
-    else{
-      this.columnView.forEach((c) => {
-          this.addLine(
-          {
-            IDForecast: this.item.Id,
-            IDItem: row.get('IDItem').value,
-            Key :  row.get('Key').value,
-            Quantity: 0,
-            Id : 0,
-            // UoMName: [line.UoMName],
-            // ItemName: [line.ItemName], //de hien thi
-            IDUoM:  row.get('IDUoM').value, //de hien thi
-            Date: c.Date,
+      itemsToPassingAPI = existedCells.map(c => {
+        return{
+             IDItem: c.get('IDItem').value,
+             Id : c.get('Id').value,
+             IDUoM:  c.get('IDUoM').value,
+           }
           });
-      });
+               
       let obj: any = {
         id: this.formGroup.get('Id').value,
-        items: this.formGroup.controls.Lines.getRawValue()
+        items: itemsToPassingAPI
+      }
+      this.commonService.connect('POST','SALE/Forecast/PutListDetail',obj).toPromise().then((result: any) => {
+        if(result){
+          this.env.showTranslateMessage('erp.app.app-component.page-bage.delete-complete', 'success');
+        }
+       })
     }
-    
+    else{
+      this.columnView.forEach(c => {
+        let i =  {
+          IDForecast: this.item.Id,
+          IDItem: row.get('IDItem').value,
+          Quantity: 0,
+          Id : 0,
+          IDUoM:  row.get('IDUoM').value,
+          Date: c.Date,
+        }
+        itemsToPassingAPI.push(i);
+        });
+      
+      let obj: any = {
+        id: this.formGroup.get('Id').value,
+        items: itemsToPassingAPI
+      }
       this.commonService.connect('POST','SALE/Forecast/PostListDetail',obj).toPromise().then((result: any) => {
-        if(result>0){
-            this.loadedData();   
+        if(result && result.length>0){
+          result.forEach(i=> {
+            if(!groupCells.controls.find(d=> d.get('Id').value == i.Id)){
+              i.Date = lib.dateFormat(i.Date);
+              this.addCell(i,true);
+            }
+          })
         }
     })
     }
@@ -426,10 +444,10 @@ export class ForecastDetailPage extends PageBase {
   isAllChecked = false;
   checkedRows: any = new FormArray([]);
   removeRow(fg, j) {
+    
     let groupRows = <FormArray>this.formGroup.controls.Rows;
-    let groupLines = <FormArray>this.formGroup.controls.Lines;
-    let deleteLines = [];
-    let filteredIds = groupLines.controls .filter( (lineControl) => lineControl.get('Key').value === fg.get('Key').value );
+    let groupCells = <FormArray>this.formGroup.controls.Cells;
+    let filteredIds = groupCells.controls .filter( (cellControl) => cellControl.get('Key').value === fg.get('Key').value );
   //  let deleteIds = filteredIds?.map((filteredControl) => filteredControl.get('Id').value);
    let deletedIds =filteredIds?.map(fg=>{
     return {
@@ -437,6 +455,12 @@ export class ForecastDetailPage extends PageBase {
     }
 
    })
+   if(!fg.get('IDItem').value){
+    var index = groupRows.controls.findIndex(d=>d.get('Key').value ==  'undefined-undefined' );
+    if(index ) groupRows.removeAt(index);
+    return;
+   }
+  //  let deleteIds = filteredIds?.map((filteredControl) => filteredControl.get('Id').value);
     this.env.showPrompt('Bạn chắc muốn xóa ?', null, 'Xóa ' + deletedIds.length + ' dòng').then((_) => {
       this.forecastDetailService.delete(deletedIds) .then((_) => {
         this.env
@@ -447,14 +471,14 @@ export class ForecastDetailPage extends PageBase {
             groupRows.removeAt(indexRowToRemove);
 
             deletedIds?.forEach((d) => {
-              const indexLineToRemove = groupLines.controls.findIndex(
-                (lineControl) => lineControl.get('Id').value == d.Id,
+              const indexCellToRemove = groupCells.controls.findIndex(
+                (cellControl) => cellControl.get('Id').value == d.Id,
               );
 
               if(indexRowToRemove){
                 this.checkedRows.removeAt(indexRowToRemove);
               }
-              groupLines.removeAt(indexLineToRemove);
+              groupCells.removeAt(indexCellToRemove);
             });
 
             this.env.showTranslateMessage('erp.app.app-component.page-bage.delete-complete', 'success');
@@ -475,58 +499,30 @@ export class ForecastDetailPage extends PageBase {
       this.checkedRows.removeAt(index);
     }
   }
-  // deleteItems() {
-  //   if (this.pageConfig.canDelete) {
-  //     let groups = <FormArray>this.formGroup.controls.Lines;
-
-  //     let itemsToDelete = groups.controls.map(s=> s.get('Id').value);
-      
-  //     this.env
-  //       .showPrompt(
-  //         'Bạn chắc muốn xóa ' + itemsToDelete.length + ' đang chọn?',
-  //         null,
-  //         'Xóa ' + itemsToDelete.length + ' dòng',
-  //       )
-  //       .then((_) => {
-  //         this.env
-  //           .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(itemsToDelete))
-  //           .then((_) => {
-  //             groups = this.formBuilder.array([]);
-  //             this.env.showTranslateMessage('erp.app.app-component.page-bage.delete-complete', 'success');
-  //             this.isAllChecked = false;
-  //           })
-  //           .catch((err) => {
-  //             groups = this.formBuilder.array([]); //temp
-  //             this.env.showMessage('Không xóa được, xin vui lòng kiểm tra lại.');
-  //             console.log(err);
-  //           });
-  //       });
-  //   }
-  // }
-
   removeSelectedItems() {
     let groupRows = <FormArray>this.formGroup.controls.Rows;
-    let groupLines = <FormArray>this.formGroup.controls.Lines;
-    let deleteLines = [];
+    let groupCells = <FormArray>this.formGroup.controls.Cells;
+    let deleteCells = [];
     this.checkedRows.controls.forEach((fg) => {
   
-      let filteredIds = groupLines.controls .filter( (lineControl) => lineControl.get('Key').value === fg.get('Key').value );
-      deleteLines = filteredIds?.map(fg=>{
+      let filteredIds = groupCells.controls .filter( (cellControl) => cellControl.get('Key').value === fg.get('Key').value );
+      let deleteList = filteredIds?.map(fg=>{
         return {
           Id : fg.get('Id').value
         }
       })
+      deleteCells = [...deleteCells,...deleteList ];
     });
-    deleteLines = [... new Set(deleteLines)];
+    deleteCells = [... new Set(deleteCells)];
     this.env
       .showPrompt(
-        'Bạn chắc muốn xóa ' + deleteLines.length + ' đang chọn?',
+        'Bạn chắc muốn xóa ' + deleteCells.length + ' đang chọn?',
         null,
-        'Xóa ' + deleteLines.length + ' dòng',
+        'Xóa ' + deleteCells.length + ' dòng',
       )
       .then((_) => {
         this.env
-          .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(deleteLines))
+          .showLoading('Xin vui lòng chờ trong giây lát...', this.forecastDetailService.delete(deleteCells))
           .then((_) => {
             this.checkedRows.controls.forEach((fg) => {
               const indexRowToRemove = groupRows.controls.findIndex(rowControl => rowControl.get('Key').value === fg.get('Key').value );
@@ -534,11 +530,11 @@ export class ForecastDetailPage extends PageBase {
            
             });
                
-            deleteLines?.forEach((d) => {
-              const indexLineToRemove = groupLines.controls.findIndex(
-                (lineControl) => lineControl.get('Id').value === d,
+            deleteCells?.forEach((d) => {
+              const indexCellToRemove = groupCells.controls.findIndex(
+                (cellControl) => cellControl.get('Id').value === d,
               );
-              groupLines.removeAt(indexLineToRemove);
+              groupCells.removeAt(indexCellToRemove);
             });
             this.env.showTranslateMessage('erp.app.app-component.page-bage.delete-complete', 'success');
             this.isAllChecked = false;
@@ -564,8 +560,8 @@ export class ForecastDetailPage extends PageBase {
     });
 }
 changePeriodAndDate() {
-  let groupLines = <FormArray>this.formGroup.controls.Lines;
-  if(groupLines.controls.length>0){
+  let groupCells = <FormArray>this.formGroup.controls.Cells;
+  if(groupCells.controls.length>0){
     this.env.showPrompt('Thay đổi chu kỳ sẽ xoá hết dữ liệu dự báo, bạn có tiếp tục?', null, 'Xóa').then(_=>{
       this.formGroup.get('Period').markAsDirty();
       this.renderView(true);
@@ -574,20 +570,16 @@ changePeriodAndDate() {
     });
   }
   else{
+    this.renderView();
     this.saveChange2();
   }
  
 }
 
   getWeekNumber(date)  {
-    // Copy the date so we don't modify the original
     date = new Date(date);
-    // Set to nearest Thursday: current date + 4 - current day number
-    // Make Sunday's day number 7
     date.setDate(date.getDate() + 4 - (date.getDay() || 7));
-    // Get first day of year
     var yearStart = new Date(date.getFullYear(), 0, 1);
-    // Calculate full weeks to nearest Thursday
     var weekNo = Math.ceil((((date.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
     return weekNo;
   }
@@ -596,10 +588,6 @@ changePeriodAndDate() {
     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
     return daysOfWeek[date.getDay()];
   }
-
-  // async saveChange() {
-  //   this.saveChange2();
-  // }
 
   saveChangeDetail(fg: FormGroup) {
     this.saveChange2(fg, null, this.forecastDetailService)
