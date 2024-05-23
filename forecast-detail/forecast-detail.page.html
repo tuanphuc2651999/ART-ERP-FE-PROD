@@ -21,15 +21,15 @@
 							<small label *ngIf="item?.Id">Id: {{item.Id}}</small>
 						</app-form-control>
 
-						<app-form-control [field]="{id:'Period', label: 'Period', type : 'ng-select', dataSource: viewDataSource, bindLabel:'Name', bindValue:'Code', form : formGroup }" (change)="changePeriodAndDate()">
+						<app-form-control [field]="{id:'Period', label: 'Period', type : 'ng-select', dataSource: viewDataSource, bindLabel:'Name', bindValue:'Code', form : formGroup }"  (change)="changePeriodAndDate()" >
 						</app-form-control>
 
 
 					</ion-col>
 
 					<ion-col size="12" size-sm size-xl="4">
-						<app-form-control [field]="{id:'StartDate', label: 'Start date', type: 'datetime-local' , form : formGroup }" (change)="renderView(true)"></app-form-control>
-						<app-form-control [field]="{id:'EndDate', label: 'End date', type: 'datetime-local' , form : formGroup }" (change)="renderView(true)"></app-form-control>
+						<app-form-control [field]="{id:'StartDate', label: 'Start date', type: 'datetime-local' , form : formGroup }" (change)="changePeriodAndDate()"></app-form-control>
+						<app-form-control [field]="{id:'EndDate', label: 'End date', type: 'datetime-local' , form : formGroup }" (change)="changePeriodAndDate()"></app-form-control>
 
 
 					</ion-col>
@@ -40,13 +40,23 @@
 			<ion-toolbar color="primary">
 				<ion-segment scrollable="true" (ionChange)="segmentChanged($event)" [value]="segmentView">
 					<ion-segment-button value="s1">
-						<ion-label>{{'Params' | translate }}</ion-label>
+						<ion-label>{{'Product' | translate }}</ion-label>
 					</ion-segment-button>
 
 					<ion-segment-button value="s2">
 						<ion-label>{{'Other information' | translate}}</ion-label>
 					</ion-segment-button>
 				</ion-segment>
+				<ion-buttons slot="end" *ngIf="segmentView=='s1'">
+
+					<ion-button class="ion-hide-sm-down" *ngIf="pageConfig.canExport && item.Id" (click)="export()" title="{{'Export' | translate}}">
+						<ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
+					</ion-button> 
+					<ion-button class="ion-hide-sm-down" *ngIf="pageConfig.canImport && item.Id" (click)="onClickImport()" title="{{'Import' | translate}}">
+						<ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
+						<input class="hide-all" #importfile type="file" accept=".xlsx" (change)="import($event)" />
+					</ion-button>
+				</ion-buttons>
 			</ion-toolbar>
 
 			<div *ngIf="segmentView == 's1'" class="table-contain">
