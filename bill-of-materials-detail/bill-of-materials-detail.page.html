@@ -1,14 +1,15 @@
 <ion-header>
   <app-detail-toolbar [page]="this">
     <div *ngIf="pageConfig.canEdit && this.id">
+      <ion-button (click)="exportClick()" title="{{'Export component' | translate}}">
+        <ion-icon slot="icon-only" name="cloud-download-outline"></ion-icon>
+      </ion-button>
       <ion-button (click)="importClick()" title="{{'Import component' | translate}}">
         <ion-icon slot="icon-only" name="cloud-upload-outline"></ion-icon>
       </ion-button>
-
       <ion-button
         (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })"
-        title="{{'Add product' | translate}}"
-      >
+        title="{{'Add product' | translate}}">
         <ion-icon slot="icon-only" name="add-circle-outline"></ion-icon>
       </ion-button>
       <span class="split ion-hide-sm-down">|</span>
@@ -32,51 +33,27 @@
     <ion-row class="hr-group ion-no-padding mobile-screen" *ngIf="segmentView.Page == 's2'">
       <ion-col size="12" size-sm="6" size-xl="6">
         <div class="c-control">
-          <label class="c-label" for="Quantity"
-            >{{'BOM for' | translate}}
-            <ion-text color="primary"
-              ><b>{{formGroup.controls.Quantity.value}}</b> {{'Finished goods' | translate}}</ion-text
-            >
+          <label class="c-label" for="Quantity">{{'BOM for' | translate}}
+            <ion-text color="primary"><b>{{formGroup.controls.Quantity.value}}</b> {{'Finished goods' |
+              translate}}</ion-text>
             <span
               *ngIf="!formGroup.controls.Quantity.valid && !formGroup.controls.Quantity.pending && (formGroup.controls.Quantity.dirty || submitAttempt)"
-              ion-text
-              color="danger"
-              >(*)</span
-            >
+              ion-text color="danger">(*)</span>
           </label>
-          <input
-            [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)"
-            (change)="saveChange()"
-            class="c-input"
-            id="Quantity"
-            formControlName="Quantity"
-            min="0.000000001"
-            step="1"
-            max="999999999999999999"
-            type="number"
-          />
+          <input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input"
+            id="Quantity" formControlName="Quantity" min="0.000000001" step="1" max="999999999999999999"
+            type="number" />
         </div>
       </ion-col>
       <ion-col size="12" size-sm="6" size-xl="6">
         <div class="c-control">
-          <label class="c-label" for="BatchSize"
-            >{{'Quantity/batch' | translate}}
+          <label class="c-label" for="BatchSize">{{'Quantity/batch' | translate}}
             <span
               *ngIf="!formGroup.controls.BatchSize.valid && !formGroup.controls.BatchSize.pending && (formGroup.controls.BatchSize.dirty || submitAttempt)"
-              ion-text
-              color="danger"
-              >(*)</span
-            >
+              ion-text color="danger">(*)</span>
           </label>
-          <input
-            [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)"
-            (change)="saveChange()"
-            class="c-input"
-            id="BatchSize"
-            formControlName="BatchSize"
-            min="0"
-            type="number"
-          />
+          <input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input"
+            id="BatchSize" formControlName="BatchSize" min="0" type="number" />
         </div>
       </ion-col>
     </ion-row>
@@ -99,8 +76,7 @@
             <ion-row class="hr-group ion-no-padding">
               <ion-col [size]="env.isMobile ? 12: 4" *ngIf="!env.isMobile">
                 <ion-list-header class="ion-no-padding">
-                  <ion-label color="primary"
-                    >{{'BOM' | translate}}
+                  <ion-label color="primary">{{'BOM' | translate}}
                     <span *ngIf="id">#{{id}}</span>
                   </ion-label>
                 </ion-list-header>
@@ -123,36 +99,21 @@
               </ion-col>
               <ion-col [size]="env.isMobile ? 12: 4">
                 <div class="c-control">
-                  <label class="c-label" for="IDItem"
-                    >{{'Finished goods' | translate}}
+                  <label class="c-label" for="IDItem">{{'Finished goods' | translate}}
                     <span
                       *ngIf="!formGroup.controls.IDItem.valid && !formGroup.controls.IDItem.pending && (formGroup.controls.IDItem.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
+                      ion-text color="danger">(*)</span>
                   </label>
-                  <ng-select
-                    class="c-input"
-                    (change)="saveChange();"
-                    labelForId="IDItem"
-                    formControlName="IDItem"
-                    [items]="itemList$ | async"
-                    [typeahead]="itemListInput$"
-                    [virtualScroll]="true"
-                    bindLabel="Name"
-                    bindValue="Id"
-                    placeholder="{{'Search for name or product code' | translate}}"
-                  >
+                  <ng-select class="c-input" (change)="saveChange();" labelForId="IDItem" formControlName="IDItem"
+                    [items]="itemList$ | async" [typeahead]="itemListInput$" [virtualScroll]="true" bindLabel="Name"
+                    bindValue="Id" placeholder="{{'Search for name or product code' | translate}}">
                     <ng-template ng-label-tmp let-i="item">
                       <div *ngIf="i.Id">
-                        <a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()"
-                          >#{{i.Id}} <ion-icon name="open-outline"></ion-icon
-                        ></a>
+                        <a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()">#{{i.Id}} <ion-icon
+                            name="open-outline"></ion-icon></a>
                         <span [title]="i.Name">
                           <b *ngIf="i.Code" (mousedown)="$event.stopPropagation()">{{i.Code}}</b>
-                          {{i.Name}}</span
-                        >
+                          {{i.Name}}</span>
                       </div>
                     </ng-template>
                     <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
@@ -160,84 +121,45 @@
                         <div>
                           <span [ngOptionHighlight]="search">{{i.Name}}</span>
                         </div>
-                        <small
-                          >#<b
-                            ><span class="important" [ngOptionHighlight]="search">{{i.Id}} - {{i.Code}}</span></b
-                          ></small
-                        >
+                        <small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} -
+                              {{i.Code}}</span></b></small>
                       </div>
                     </ng-template>
                   </ng-select>
                 </div>
                 <div class="c-control">
-                  <label class="c-label" for="Quantity"
-                    >{{'BOM for' | translate}}
-                    <ion-text color="primary"
-                      ><b>{{formGroup.controls.Quantity.value}}</b> {{'Finished goods' | translate}}</ion-text
-                    >
+                  <label class="c-label" for="Quantity">{{'BOM for' | translate}}
+                    <ion-text color="primary"><b>{{formGroup.controls.Quantity.value}}</b> {{'Finished goods' |
+                      translate}}</ion-text>
                     <span
                       *ngIf="!formGroup.controls.Quantity.valid && !formGroup.controls.Quantity.pending && (formGroup.controls.Quantity.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
+                      ion-text color="danger">(*)</span>
                   </label>
-                  <input
-                    [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)"
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="Quantity"
-                    formControlName="Quantity"
-                    min="0.000000001"
-                    step="1"
-                    max="999999999999999999"
-                    type="number"
-                  />
+                  <input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input"
+                    id="Quantity" formControlName="Quantity" min="0.000000001" step="1" max="999999999999999999"
+                    type="number" />
                 </div>
                 <div class="c-control">
-                  <label class="c-label" for="BatchSize"
-                    >{{'Quantity/batch' | translate}}
+                  <label class="c-label" for="BatchSize">{{'Quantity/batch' | translate}}
                     <span
                       *ngIf="!formGroup.controls.BatchSize.valid && !formGroup.controls.BatchSize.pending && (formGroup.controls.BatchSize.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
+                      ion-text color="danger">(*)</span>
                   </label>
-                  <input
-                    [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)"
-                    (change)="saveChange()"
-                    class="c-input"
-                    id="BatchSize"
-                    formControlName="BatchSize"
-                    min="0"
-                    type="number"
-                  />
+                  <input [readonly]="!(pageConfig.canEdit || pageConfig.canAdd)" (change)="saveChange()" class="c-input"
+                    id="BatchSize" formControlName="BatchSize" min="0" type="number" />
                 </div>
               </ion-col>
 
               <ion-col [size]="env.isMobile ? 12: 4">
                 <div class="c-control">
-                  <label class="c-label" for="Type"
-                    >{{'Classification' | translate}}
+                  <label class="c-label" for="Type">{{'Classification' | translate}}
                     <span
                       *ngIf="!formGroup.controls.Type.valid && !formGroup.controls.Type.pending && (formGroup.controls.Type.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
+                      ion-text color="danger">(*)</span>
                   </label>
-                  <ng-select
-                    class="c-input"
-                    (change)="saveChange();"
-                    labelForId="Type"
-                    formControlName="Type"
-                    [items]="typeList"
-                    [virtualScroll]="true"
-                    bindLabel="Name"
-                    bindValue="Code"
-                    placeholder="{{'Search' | translate}}"
-                  >
+                  <ng-select class="c-input" (change)="saveChange();" labelForId="Type" formControlName="Type"
+                    [items]="typeList" [virtualScroll]="true" bindLabel="Name" bindValue="Code"
+                    placeholder="{{'Search' | translate}}">
                     <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                       <div *ngIf="i">
                         <div>
@@ -249,25 +171,14 @@
                   </ng-select>
                 </div>
                 <div class="c-control" *ngIf="pageConfig.canViewPrice">
-                  <label class="c-label" for="IDPriceList"
-                    >{{'Selling price list' | translate}}
+                  <label class="c-label" for="IDPriceList">{{'Selling price list' | translate}}
                     <span
                       *ngIf="!formGroup.controls.IDPriceList.valid && !formGroup.controls.IDPriceList.pending && (formGroup.controls.IDPriceList.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
+                      ion-text color="danger">(*)</span>
                   </label>
-                  <ng-select
-                    class="c-input"
-                    (change)="changePriceList();"
-                    labelForId="IDPriceList"
-                    formControlName="IDPriceList"
-                    [items]="priceList"
-                    bindLabel="Name"
-                    bindValue="Id"
-                    placeholder="{{'Select price list' | translate}}"
-                  >
+                  <ng-select class="c-input" (change)="changePriceList();" labelForId="IDPriceList"
+                    formControlName="IDPriceList" [items]="priceList" bindLabel="Name" bindValue="Id"
+                    placeholder="{{'Select price list' | translate}}">
                     <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                       <div *ngIf="i">
                         <div>
@@ -279,25 +190,14 @@
                   </ng-select>
                 </div>
                 <div class="c-control" *ngIf="pageConfig.canViewStdCost">
-                  <label class="c-label" for="IDStdCostPriceList"
-                    >{{'BOM price list' | translate}}
+                  <label class="c-label" for="IDStdCostPriceList">{{'BOM price list' | translate}}
                     <span
                       *ngIf="!formGroup.controls.IDStdCostPriceList.valid && !formGroup.controls.IDStdCostPriceList.pending && (formGroup.controls.IDStdCostPriceList.dirty || submitAttempt)"
-                      ion-text
-                      color="danger"
-                      >(*)</span
-                    >
+                      ion-text color="danger">(*)</span>
                   </label>
-                  <ng-select
-                    class="c-input"
-                    (change)="changePriceList();"
-                    labelForId="IDStdCostPriceList"
-                    formControlName="IDStdCostPriceList"
-                    [items]="priceList"
-                    bindLabel="Name"
-                    bindValue="Id"
-                    placeholder="{{'Select price list' | translate}}"
-                  >
+                  <ng-select class="c-input" (change)="changePriceList();" labelForId="IDStdCostPriceList"
+                    formControlName="IDStdCostPriceList" [items]="priceList" bindLabel="Name" bindValue="Id"
+                    placeholder="{{'Select price list' | translate}}">
                     <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
                       <div *ngIf="i">
                         <div>
@@ -325,17 +225,14 @@
                   <div class="col-name cell">{{'Component' | translate}}</div>
                   <div class="col-uom cell">{{'Unit' | translate}}</div>
                   <div class="col-qty cell">{{'Quantity' | translate}}</div>
-                  <div
-                    class="col-qty cell"
-                    title="{{'Is the required resource to start or finish the production' | translate}}"
-                  >
+                  <div class="col-qty cell"
+                    title="{{'Is the required resource to start or finish the production' | translate}}">
                     {{'Add' | translate}}
                   </div>
                   <div class="col-uom cell">{{'Provide' | translate}}</div>
                   <div class="col-total cell" *ngIf="pageConfig.canViewPrice">
-                    <small class="clickable" (click)="resetPrice()" *ngIf="pageConfig.canEditPrice"
-                      >{{'Reset' | translate}}</small
-                    >
+                    <small class="clickable" (click)="resetPrice()" *ngIf="pageConfig.canEditPrice">{{'Reset' |
+                      translate}}</small>
                     {{'Price' | translate}}
                   </div>
                   <div class="col-total cell" *ngIf="pageConfig.canViewPrice">{{'Total price' | translate}}</div>
@@ -343,10 +240,8 @@
                   <div class="col-total cell" *ngIf="pageConfig.canViewStdCost">{{'Total Std Cost' | translate}}</div>
                   <div class="col-del cell" *ngIf="pageConfig.canEdit"></div>
                 </header>
-                <ion-reorder-group
-                  (ionItemReorder)="doReorder($event, formGroup.get('Lines')['controls'])"
-                  [disabled]="!pageConfig.canEdit"
-                >
+                <ion-reorder-group (ionItemReorder)="doReorder($event, formGroup.get('Lines')['controls'])"
+                  [disabled]="!pageConfig.canEdit">
                   <ng-container *ngFor="let g of formGroup.get('Lines')['controls']; let idx = index;">
                     <ng-container [formGroup]="g">
                       <div class="row" [ngClass]="{'header': g.controls.Type.value=='CTStage'}">
@@ -355,12 +250,9 @@
 
                         <div class="col-uom cell">
                           <div class="col-uom cell">
-                            <select
-                              formControlName="Type"
+                            <select formControlName="Type"
                               [attr.disabled]="(!pageConfig.canEdit || submitAttempt)?'':null"
-                              class="c-input c-dropdown"
-                              (change)="changedType(g)"
-                            >
+                              class="c-input c-dropdown" (change)="changedType(g)">
                               <option [disabled]="t.Flag" *ngFor="let t of componentTypeList" [value]="t.Code">
                                 {{t.Name}}
                               </option>
@@ -369,40 +261,26 @@
                         </div>
                         <ng-container *ngIf="g.controls.Type.value!='CTItem'">
                           <div class="col-name cell">
-                            <input
-                              formControlName="Name"
-                              [readonly]="!pageConfig.canEdit || submitAttempt"
-                              (change)="saveChange()"
-                              class="c-input ion-text-left"
-                            />
+                            <input formControlName="Name" [readonly]="!pageConfig.canEdit || submitAttempt"
+                              (change)="saveChange()" class="c-input ion-text-left" />
                           </div>
                         </ng-container>
                         <ng-container *ngIf="g.controls.Type.value=='CTItem'">
                           <div class="col-name cell">
-                            <ng-select
-                              formControlName="_Item"
-                              appendTo="#order-detail-page"
-                              [readonly]="!pageConfig.canEdit || submitAttempt"
-                              class="c-input"
-                              (change)="changedIDItem(g, $event)"
-                              [labelForId]="'IDItem'+idx"
-                              [items]="g.controls._ItemDataSource.value | async"
-                              [clearable]="false"
+                            <ng-select formControlName="_Item" appendTo="#order-detail-page"
+                              [readonly]="!pageConfig.canEdit || submitAttempt" class="c-input"
+                              (change)="changedIDItem(g, $event)" [labelForId]="'IDItem'+idx"
+                              [items]="g.controls._ItemDataSource.value | async" [clearable]="false"
                               [typeahead]="g.controls._ItemSearchInput.value"
-                              [loading]="g.controls._ItemSearchLoading.value"
-                              [virtualScroll]="true"
-                              bindLabel="Name"
-                              placeholder="{{'Search for name or product code' | translate}}"
-                            >
+                              [loading]="g.controls._ItemSearchLoading.value" [virtualScroll]="true" bindLabel="Name"
+                              placeholder="{{'Search for name or product code' | translate}}">
                               <ng-template ng-label-tmp let-i="item">
                                 <div *ngIf="i.Id">
-                                  <a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()"
-                                    >#{{i.Id}} <ion-icon name="open-outline"></ion-icon
-                                  ></a>
+                                  <a [routerLink]="['/item/'+i.Id]" (mousedown)="$event.stopPropagation()">#{{i.Id}}
+                                    <ion-icon name="open-outline"></ion-icon></a>
                                   <span [title]="i.Name">
                                     <b *ngIf="i.Code" (mousedown)="$event.stopPropagation()">{{i.Code}}</b>
-                                    {{i.Name}}</span
-                                  >
+                                    {{i.Name}}</span>
                                 </div>
                               </ng-template>
                               <ng-template ng-option-tmp let-i="item" let-search="searchTerm">
@@ -410,78 +288,46 @@
                                   <div>
                                     <span [ngOptionHighlight]="search">{{i.Name}}</span>
                                   </div>
-                                  <small
-                                    >#<b
-                                      ><span class="important" [ngOptionHighlight]="search"
-                                        >{{i.Id}} - {{i.Code}}</span
-                                      ></b
-                                    ></small
-                                  >
+                                  <small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} -
+                                        {{i.Code}}</span></b></small>
                                 </div>
                               </ng-template>
                             </ng-select>
                           </div>
                           <div class="col-uom cell">
-                            <select
-                              formControlName="IDUoM"
+                            <select formControlName="IDUoM"
                               [attr.disabled]="(!pageConfig.canEdit || submitAttempt)?'':null"
-                              class="c-input c-dropdown"
-                              (change)="changedIDUoM(g)"
-                            >
+                              class="c-input c-dropdown" (change)="changedIDUoM(g)">
                               <option [disabled]="t.Flag" *ngFor="let t of g.controls._UoMs.value" [value]="t.Id">
                                 {{t.Name}}
                               </option>
                             </select>
                           </div>
                           <div class="col-qty cell">
-                            <input
-                              formControlName="Quantity"
-                              [readonly]="!pageConfig.canEdit || submitAttempt"
-                              (focus)="$event.target.select()"
-                              (change)="saveChange()"
-                              class="c-input"
-                              type="number"
-                              [min]="0.000000001"
-                              [max]="999999999999999999"
-                              onkeydown="return event.keyCode !== 190"
-                            />
+                            <input formControlName="Quantity" [readonly]="!pageConfig.canEdit || submitAttempt"
+                              (focus)="$event.target.select()" (change)="saveChange()" class="c-input" type="number"
+                              [min]="0.000000001" [max]="999999999999999999" onkeydown="return event.keyCode !== 190" />
                           </div>
                           <div class="col-qty cell">
-                            <input
-                              formControlName="AdditionalQuantity"
-                              [readonly]="!pageConfig.canEdit || submitAttempt"
-                              (focus)="$event.target.select()"
-                              (change)="saveChange()"
-                              class="c-input"
-                              type="number"
-                              [min]="0"
-                              [max]="999999999999999999"
-                              onkeydown="return event.keyCode !== 190"
-                            />
+                            <input formControlName="AdditionalQuantity"
+                              [readonly]="!pageConfig.canEdit || submitAttempt" (focus)="$event.target.select()"
+                              (change)="saveChange()" class="c-input" type="number" [min]="0" [max]="999999999999999999"
+                              onkeydown="return event.keyCode !== 190" />
                           </div>
                           <div class="col-uom cell">
-                            <select
-                              formControlName="IssueMethod"
+                            <select formControlName="IssueMethod"
                               [attr.disabled]="(!pageConfig.canEdit || submitAttempt)?'':null"
-                              class="c-input c-dropdown"
-                              (change)="saveChange()"
-                            >
+                              class="c-input c-dropdown" (change)="saveChange()">
                               <option [disabled]="t.Flag" *ngFor="let t of issueMethodList" [value]="t.Code">
                                 {{t.Name}}
                               </option>
                             </select>
                           </div>
                           <div class="col-total cell" *ngIf="pageConfig.canViewPrice">
-                            <input
-                              formControlName="UoMPrice"
-                              class="c-input"
+                            <input formControlName="UoMPrice" class="c-input"
                               [readonly]="!(pageConfig.canEdit && pageConfig.canEditPrice)"
-                              (focus)="$event.target.select()"
-                              (change)="saveChange()"
-                              mask="separator.0"
-                              thousandSeparator=","
-                              [allowNegativeNumbers]="false"
-                            />
+                              (focus)="$event.target.select()" (change)="saveChange()" mask="separator.0"
+                              thousandSeparator="," [allowNegativeNumbers]="false" />
                           </div>
                           <div class="col-total cell disable" *ngIf="pageConfig.canViewPrice">
                             {{ (g.controls.TotalPrice.value ) | number: '1.0-0'}}
@@ -501,24 +347,16 @@
                   </ng-container>
                 </ion-reorder-group>
                 <div class="row" *ngIf="pageConfig.canEdit && item?.Lines?.length > 1">
-                  <div
-                    class="col-id cell"
-                    *ngIf="pageConfig.canEdit"
-                    (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })"
-                  >
-                    <ion-icon
-                      class="min-btn"
-                      title="{{'Add product' | translate}}"
-                      name="add-circle-outline"
-                    ></ion-icon>
+                  <div class="col-id cell" *ngIf="pageConfig.canEdit"
+                    (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })">
+                    <ion-icon class="min-btn" title="{{'Add product' | translate}}"
+                      name="add-circle-outline"></ion-icon>
                   </div>
                   <div class="col-id cell" *ngIf="!pageConfig.canEdit"></div>
                   <div class="col-name cell">
-                    <b
-                      *ngIf="pageConfig.canEdit && this.id"
-                      (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })"
-                      >{{'Add component' | translate}}</b
-                    >
+                    <b *ngIf="pageConfig.canEdit && this.id"
+                      (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })">{{'Add
+                      component' | translate}}</b>
                   </div>
                   <div class="col-uom cell">
                     <div style="height: 35px"></div>
@@ -545,11 +383,8 @@
         <div class="table-contain">
           <div class="row" *ngIf="pageConfig.canEdit && this.id && item?.Lines?.length < 2">
             <div class="cell">
-              <ion-button
-                fill="clear"
-                size="small"
-                (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })"
-              >
+              <ion-button fill="clear" size="small"
+                (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })">
                 <ion-icon slot="start" name="add-circle"></ion-icon>
                 {{'Add component' | translate}}
               </ion-button>
@@ -570,8 +405,7 @@
                     <ion-card-content class="info barcode" [ngClass]="{'ctheader': g.controls.Type.value=='CTStage'}">
                       <ng-container *ngIf="g.controls.Type.value!='CTItem'">
                         <div
-                          [ngClass]="{'ct-other': g.controls.Type.value!='CTStage', 'ct-stage': g.controls.Type.value=='CTStage'}"
-                        >
+                          [ngClass]="{'ct-other': g.controls.Type.value!='CTStage', 'ct-stage': g.controls.Type.value=='CTStage'}">
                           <div class="ct-del-item" *ngIf="pageConfig.canEdit" (click)="removeOrderLine(idx, false)">
                             <ion-icon color="danger" class="min-btn" name="trash-outline"></ion-icon>
                           </div>
@@ -580,18 +414,12 @@
                               {{t.Name}}
                             </option>
                           </select>
-                          <input
-                            *ngIf="g.controls.Type.value=='CTStage'"
-                            formControlName="Name"
+                          <input *ngIf="g.controls.Type.value=='CTStage'" formControlName="Name"
                             [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'"
-                            class="c-input ion-text-left"
-                          />
-                          <ion-textarea
-                            *ngIf="g.controls.Type.value!='CTStage'"
-                            formControlName="Name"
+                            class="c-input ion-text-left" />
+                          <ion-textarea *ngIf="g.controls.Type.value!='CTStage'" formControlName="Name"
                             [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'"
-                            class="c-text-area ion-text-left"
-                          ></ion-textarea>
+                            class="c-text-area ion-text-left"></ion-textarea>
                         </div>
                       </ng-container>
                       <ng-container *ngIf="g.controls.Type.value=='CTItem'">
@@ -605,20 +433,13 @@
                             </option>
                           </select>
                           <br />
-                          <ng-select
-                            formControlName="_Item"
-                            appendTo="#order-detail-page"
+                          <ng-select formControlName="_Item" appendTo="#order-detail-page"
                             [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'"
-                            class="c-input"
-                            (change)="changedIDItem(g, $event)"
-                            [labelForId]="'IDItem'+idx"
+                            class="c-input" (change)="changedIDItem(g, $event)" [labelForId]="'IDItem'+idx"
                             [items]="g.controls._ItemDataSource.value | async"
                             [typeahead]="g.controls._ItemSearchInput.value"
-                            [loading]="g.controls._ItemSearchLoading.value"
-                            [virtualScroll]="true"
-                            bindLabel="Name"
-                            placeholder="{{'Search for name or product code' | translate}}"
-                          >
+                            [loading]="g.controls._ItemSearchLoading.value" [virtualScroll]="true" bindLabel="Name"
+                            placeholder="{{'Search for name or product code' | translate}}">
                             <ng-template ng-label-tmp let-i="item">
                               <b *ngIf="i.Code" [title]="i.Id"> {{i.Code}} </b>
                               {{i.Name}}
@@ -628,13 +449,8 @@
                                 <div>
                                   <span [ngOptionHighlight]="search">{{i.Name}}</span>
                                 </div>
-                                <small
-                                  >#<b
-                                    ><span class="important" [ngOptionHighlight]="search"
-                                      >{{i.Id}} - {{i.Code}}</span
-                                    ></b
-                                  ></small
-                                >
+                                <small>#<b><span class="important" [ngOptionHighlight]="search">{{i.Id}} -
+                                      {{i.Code}}</span></b></small>
                               </div>
                             </ng-template>
                           </ng-select>
@@ -642,23 +458,14 @@
 
                         <div slot="start" class="c-quantity">
                           <ion-badge class="ion-text-lowercase" slot="start">
-                            <input
-                              formControlName="Quantity"
-                              (focus)="$event.target.select()"
-                              [readonly]="!pageConfig.canEdit || submitAttempt"
-                              [disabled]="!pageConfig.canEdit"
-                              class="txtQtyInput"
-                              type="number"
-                              [ngModel]="g.controls.Quantity.value"
-                              (ionChange)="this.calcTotalLine()"
-                            />
+                            <input formControlName="Quantity" (focus)="$event.target.select()"
+                              [readonly]="!pageConfig.canEdit || submitAttempt" [disabled]="!pageConfig.canEdit"
+                              class="txtQtyInput" type="number" [ngModel]="g.controls.Quantity.value"
+                              (ionChange)="this.calcTotalLine()" />
 
-                            <select
-                              formControlName="IDUoM"
+                            <select formControlName="IDUoM"
                               [attr.disabled]="(!pageConfig.canEdit || submitAttempt)?'':null"
-                              class="c-input c-dropdown"
-                              (change)="changedIDUoM(g)"
-                            >
+                              class="c-input c-dropdown" (change)="changedIDUoM(g)">
                               <option [disabled]="t.Flag" *ngFor="let t of g.controls._UoMs.value" [value]="t.Id">
                                 {{t.Name}}
                               </option>
@@ -666,81 +473,40 @@
 
                             <!-- <ion-text>{{g.controls.Quantity.value}} </ion-text> -->
                           </ion-badge>
-                          <ion-range
-                            formControlName="Quantity"
-                            (click)="g.txtQtyShow = !g.txtQtyShow"
-                            (ionChange)="this.calcTotalLine()"
-                            [ngModel]="g.controls.Quantity.value"
-                            [disabled]="!pageConfig.canEdit"
-                            debounce="300"
-                            min="0"
-                            max="1000"
-                            color="success"
-                            pin="true"
-                            step="1"
-                            [snaps]="false"
-                          >
+                          <ion-range formControlName="Quantity" (click)="g.txtQtyShow = !g.txtQtyShow"
+                            (ionChange)="this.calcTotalLine()" [ngModel]="g.controls.Quantity.value"
+                            [disabled]="!pageConfig.canEdit" debounce="300" min="0" max="1000" color="success"
+                            pin="true" step="1" [snaps]="false">
                           </ion-range>
                           <div class="ct-additional-quantity">
-                            <input
-                              formControlName="AdditionalQuantity"
-                              (change)="this.calcTotalLine()"
+                            <input formControlName="AdditionalQuantity" (change)="this.calcTotalLine()"
                               [ngModel]="g.controls.AdditionalQuantity.value"
                               [readonly]="!pageConfig.canEdit || submitAttempt || item.Status=='Palletized'"
-                              (focus)="$event.target.select()"
-                              class="c-input txtAddQtyInput"
-                              type="number"
-                              [min]="0"
-                              [max]="999999999999999999"
-                              onkeydown="return event.keyCode !== 190"
-                            />
+                              (focus)="$event.target.select()" class="c-input txtAddQtyInput" type="number" [min]="0"
+                              [max]="999999999999999999" onkeydown="return event.keyCode !== 190" />
                             <ion-text>±</ion-text>
-                            <ion-range
-                              formControlName="AdditionalQuantity"
-                              (click)="g.txtAddQtyShow = !g.txtAddQtyShow"
-                              (ionChange)="this.calcTotalLine()"
-                              [ngModel]="g.controls.AdditionalQuantity.value"
-                              [disabled]="!pageConfig.canEdit"
-                              debounce="300"
-                              min="0"
-                              max="100"
-                              color="success"
-                              pin="true"
-                              step="1"
-                              [snaps]="false"
-                            >
+                            <ion-range formControlName="AdditionalQuantity" (click)="g.txtAddQtyShow = !g.txtAddQtyShow"
+                              (ionChange)="this.calcTotalLine()" [ngModel]="g.controls.AdditionalQuantity.value"
+                              [disabled]="!pageConfig.canEdit" debounce="300" min="0" max="100" color="success"
+                              pin="true" step="1" [snaps]="false">
                             </ion-range>
                           </div>
                         </div>
                         <div *ngIf="pageConfig.canEditPrice">
-                          <ion-text
-                            class="btnShowPrice"
-                            (click)="togglePrice(idx)"
-                            [ngClass]="{'showned' : isShowPrice[idx]}"
-                            >{{'View price' | translate}}</ion-text
-                          >
+                          <ion-text class="btnShowPrice" (click)="togglePrice(idx)"
+                            [ngClass]="{'showned' : isShowPrice[idx]}">{{'View price' | translate}}</ion-text>
                         </div>
-                        <div
-                          class="additional-info"
-                          *ngIf="isShowPrice[idx]"
-                          [ngClass]="{'hidden-field' : !pageConfig.canEditPrice}"
-                        >
+                        <div class="additional-info" *ngIf="isShowPrice[idx]"
+                          [ngClass]="{'hidden-field' : !pageConfig.canEditPrice}">
                           <table class="table">
                             <tr>
                               <td>{{'Unit selling price' | translate}}</td>
 
                               <td class="align-right">
-                                <input
-                                  formControlName="UoMPrice"
-                                  [ngModel]="g.controls.UoMPrice.value"
-                                  class="c-input"
+                                <input formControlName="UoMPrice" [ngModel]="g.controls.UoMPrice.value" class="c-input"
                                   [readonly]="!(pageConfig.canEdit && pageConfig.canEditPrice)"
-                                  (focus)="$event.target.select()"
-                                  (change)="this.calcTotalLine()"
-                                  mask="separator.0"
-                                  thousandSeparator=","
-                                  [allowNegativeNumbers]="false"
-                                />
+                                  (focus)="$event.target.select()" (change)="this.calcTotalLine()" mask="separator.0"
+                                  thousandSeparator="," [allowNegativeNumbers]="false" />
                                 {{'đ' | translate}}
                               </td>
                             </tr>
@@ -774,32 +540,24 @@
 
                 <div class="btn-add-new" *ngIf="pageConfig.canEdit">
                   <div class="btnAddNewContainer" *ngIf="pageConfig.canEdit">
-                    <ion-icon
-                      class="min-btn"
-                      title="{{'Add product' | translate}}"
-                      name="add-circle-outline"
-                    ></ion-icon>
-                    <b
-                      class="btnAdd"
-                      *ngIf="pageConfig.canEdit && this.id"
-                      (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })"
-                      >{{'Add component' | translate}}</b
-                    >
+                    <ion-icon class="min-btn" title="{{'Add product' | translate}}"
+                      name="add-circle-outline"></ion-icon>
+                    <b class="btnAdd" *ngIf="pageConfig.canEdit && this.id"
+                      (click)="addOrderLine({ Type: 'CTItem', IDBOM: item.Id, Id: 0, AdditionalQuantity: 0, IssueMethod: 'Backflush'  })">{{'Add
+                      component' | translate}}</b>
                   </div>
                 </div>
 
                 <ion-card-content class="info barcode secondary total-price" *ngIf="pageConfig.canEdit">
                   <div>
                     <ion-badge class="ion-float-right">
-                      {{ item.TotalPrice | number: '1.0-0' }} {{'đ' | translate}}</ion-badge
-                    >
+                      {{ item.TotalPrice | number: '1.0-0' }} {{'đ' | translate}}</ion-badge>
                     <ion-badge color="secondary">{{'Suggested selling price' | translate}}</ion-badge>
                   </div>
 
                   <div>
                     <ion-badge class="ion-float-right">
-                      {{ item.TotalStdCost | number: '1.0-0' }} {{'đ' | translate}}</ion-badge
-                    >
+                      {{ item.TotalStdCost | number: '1.0-0' }} {{'đ' | translate}}</ion-badge>
                     <ion-badge color="secondary">{{'Production cost' | translate}}</ion-badge>
                   </div>
                 </ion-card-content>
@@ -818,4 +576,5 @@
     </div>
   </div>
   <app-page-message [itemsLength]="item? 1: 0" [showSpinner]="pageConfig.showSpinner"></app-page-message>
+  <input class="hide-all" #importfile type="file" accept=".xlsx" (change)="uploadBOMDetail($event)" />
 </ion-content>
